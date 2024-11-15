@@ -134,14 +134,14 @@ def main():
 
 
 def process_dbr_tags(settings):
-    df1 = get_dbr_jsons(DBR_BASE_URL)
+    df1 = get_dbr_jsons(settings, DBR_BASE_URL)
 
     df1 = df1[df1["post_count"] >= settings["min_post_thresh"]]
     df1 = df1[["name", "category", "post_count"]]  # Switch 'category' and 'post_count' and remove useless columns
     df1 = df1.sort_values(by="post_count", ascending=False)
 
     if settings["incl_aliases"] == "y":  # NOTE: e621 has extra "pending" status for alias tags while danbooru does not
-        df2 = get_dbr_jsons(DBR_ALIAS_URL)
+        df2 = get_dbr_jsons(settings, DBR_ALIAS_URL)
 
         if settings["dbr_incl_deleted_alias"] == "n":
             df2 = df2[df2["status"] == "active"]
@@ -154,7 +154,7 @@ def process_dbr_tags(settings):
         return df1
 
 
-def get_dbr_jsons(dbr_url: str):
+def get_dbr_jsons(settings, dbr_url: str):
     """get tags and aliases from Danbooru jsons"""
     tag_df = pd.DataFrame()
 
@@ -170,17 +170,19 @@ def get_dbr_jsons(dbr_url: str):
                 print(f"(DBR) No more data found at page {page}. Stopping...", flush=True)
                 break
 
+            
+
         tag_df = pd.concat([tag_df, pd.DataFrame(data)], ignore_index=True)
 
         if dbr_url == DBR_BASE_URL:
             print(f"(DBR) Page {page} tags processed...", flush=True)
+            for item in data:
+                if int(item["post_count"]) < int(settings["min_post_thresh"]):
+                    print(f"(DBR) Stopping early due to hitting minimum post threshold on page {page}...", flush=True)
+                    return tag_df  # Return early if the condition is met
         else:
             print(f"(DBR) Page {page} aliases processed...", flush=True)
         time.sleep(0.3)  # Sleep for 0.5 second because i guess it helps with ratelimits?
-
-    # output_path = os.path.join(current_directory, f"DBR_aliases_{current_date}.csv")
-    # tag_df.to_csv(output_path, index=False)
-    # print(tag_df.head())  # Shows the first 5 rows
 
     return tag_df
 
@@ -203,7 +205,7 @@ def process_e6_tags_csv(settings):
     df = df[df["post_count"] >= settings["min_post_thresh"]]
 
     if settings["incl_aliases"] == "y":
-        alias_df = process_e6_aliases_csv(settings, "tag_aliases-2024-11-14.csv")
+        alias_df = process_e6_aliases_csv(settings)
         return add_aliases(df, alias_df)
 
     else:
