@@ -16,3 +16,5 @@ This was made in mind with usage for:
 The tag lists should be saves in the same directory as the script when it's done (to check you can just check the output, it should print out the location of the saved files.)
 
 Danbooru scraping part in the code was copied from here (many thank): https://github.com/BetaDoggo/danbooru-tag-list
+
+im bad at repo titles
