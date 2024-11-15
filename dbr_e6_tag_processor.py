@@ -10,6 +10,8 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+# TODO: theres really unnecessary and stupid math for the merged list that i should probably remove but i mean it doesnt really do any harm either and im lazy so it stays, maybe
+
 # region global vars
 
 E621_BASE_URL = "https://e621.net/db_export/"  # come in csv format compressed in gz file
@@ -156,7 +158,7 @@ def get_dbr_jsons(dbr_url: str):
     """get tags and aliases from Danbooru jsons"""
     tag_df = pd.DataFrame()
 
-    for page in range(1, 5):
+    for page in range(1, 1001):
         url = f"{dbr_url}&page={page}"  # Update URL with current page
 
         response = requests.get(url)
@@ -338,7 +340,7 @@ def merge_dbr_e6_tags(df1, df2):  # merge dbr and e6 tags by name and with both 
 
 def save_df_as_csv(df, file_name_prefix):
     output_path = os.path.join(current_directory, f"{file_name_prefix}_{current_date}.csv")
-    df.to_csv(output_path, index=False)
+    df.to_csv(output_path, index=False, header=False)
     print(f"CSV file has been saved as '{output_path}'")
 
 
