@@ -9,7 +9,7 @@ This was made in mind with usage for:
 ### The lists I made are also available on CivitAI https://civitai.com/models/950325
 
 ## Running the Script Yourself
-- Install the dependencies first `pip install pandas requests beautifulsoup4`
+- Install the dependencies first `pip install pandas requests beautifulsoup4` or from the txt files `pip install -r requirements.txt`
 - Run the script and answer the questions after which the processing begins.
 - You can also just spam enter to use the default values which will give you both Danbooru and e621 tag lists including active and deleted aliases and the merged list.
 
