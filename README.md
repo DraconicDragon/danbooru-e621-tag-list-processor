@@ -1,12 +1,10 @@
-## Scrapes tags from Danbooru and downloads e621 tags from db_export index and then formats them for use in AI related autocomplete extensions
-This script let's you create an up to date tag list of either or both Danbooru and e621 with a few options like including aliases/aliases with a specific status only, minimum post threshold for a tag to be kept and either making a Danbooru or e621 only list, or both and merged.
+## Create and Format Danbooru and e621 Tags for AI Autocomplete Extensions
+This script scrapes tags from Danbooru and downloads e621 tags from the DB export index, formatting them for AI autocomplete extensions. It can generate separate or merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status.
 
-This was made in mind with usage for:
-- https://github.com/DominikDoom/a1111-sd-webui-tagcomplete
-- https://github.com/pythongosssss/ComfyUI-Custom-Scripts Autocomplete feature
-
+Output CSV files have been tested with [sd-webui-tagcomplete](https://github.com/DominikDoom/a1111-sd-webui-tagcomplete) and [pythongosssss/ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts) autocomplete feature
 
 ### The lists I made are also available on CivitAI https://civitai.com/models/950325
+The tag lists are automatically updated every 2 months by a GitHub actions workflow and saved in the tag-lists folder so even if I forget to update the tag lists manually, they will always be updated automatically.
 
 ## Running the Script Yourself
 - Install the dependencies first `pip install pandas requests beautifulsoup4` or from the txt files `pip install -r requirements.txt` <sub>personal note: future pandas version do not handle NaNs on concat iirc so might need to update code</sub>
