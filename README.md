@@ -7,7 +7,7 @@ Output CSV files have been tested with [sd-webui-tagcomplete](https://github.com
 The tag lists are automatically updated every 2 months by a GitHub actions workflow and saved in the tag-lists folder so even if I forget to update the tag lists manually, they will always be updated automatically.
 
 ## Running the Script Yourself
-- Install the dependencies first `pip install pandas requests beautifulsoup4` or from the txt files `pip install -r requirements.txt` <sub>personal note: future pandas version do not handle NaNs on concat iirc so might need to update code</sub>
+- Install the dependencies first `pip install pandas requests beautifulsoup4` or from the txt files `pip install -r requirements.txt`
 - Run the script and answer the questions after which the processing begins.
 - You can also just spam enter to use the default values which will give you both Danbooru and e621 tag lists including active and deleted aliases and the merged list.
 
@@ -17,5 +17,5 @@ Danbooru scraping part in the code was copied from here (many thank): https://gi
 
 im bad at repo titles
 
-<sub>personal note2 because im too lazy to do something about it: regarding pandas dbr_e6_tag_processor.py:175: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+<sub>personal note regarding pandas because im too lazy to actually read it: dbr_e6_tag_processor.py:175: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
   tag_df = pd.concat([tag_df, pd.DataFrame(data)], ignore_index=True)</sub>
