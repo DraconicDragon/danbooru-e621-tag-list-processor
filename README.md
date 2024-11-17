@@ -7,7 +7,7 @@ Output CSV files have been tested with [sd-webui-tagcomplete](https://github.com
 The tag lists are automatically updated every 2 months by a GitHub actions workflow and saved in the tag-lists folder so even if I forget to update the tag lists manually, they will always be updated automatically.
 
 ## Running the Script Yourself
-- Install the dependencies first `pip install pandas requests beautifulsoup4` or from the txt files `pip install -r requirements.txt`
+- Install the dependencies first `pip install pandas requests beautifulsoup4` or from the txt file `pip install -r requirements.txt`
 - Run the script and answer the questions after which the processing begins.
 - You can also just spam enter to use the default values which will give you both Danbooru and e621 tag lists including active and deleted aliases and the merged list.
 
