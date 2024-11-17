@@ -16,3 +16,6 @@ The tag lists should be saves in the same directory as the script when it's done
 Danbooru scraping part in the code was copied from here (many thank): https://github.com/BetaDoggo/danbooru-tag-list
 
 im bad at repo titles
+
+<sub>personal note2 because im too lazy to do something about it: regarding pandas dbr_e6_tag_processor.py:175: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  tag_df = pd.concat([tag_df, pd.DataFrame(data)], ignore_index=True)</sub>
