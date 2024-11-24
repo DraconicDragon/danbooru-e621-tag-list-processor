@@ -21,11 +21,15 @@ DBR_ALIAS_URL = "https://danbooru.donmai.us/tag_aliases.json?commit=Search&limit
 
 DEFAULTS = {
     "choice_site": 3,
-    "min_post_thresh": 50,
+    "min_post_thresh": 45,  # default to 45 instead 50 cuz noobai apparently knows all artists presumably but not really?, some arent trained as much but some are
+    # problem: lower thresh = larger file, might cause performance issues with autocomplete speed (forge/a1111)? test needed
+    # "included_categories": [0,1,2,3,4,5], # kinda useless for this program so is excluded; 0: General, 1: Artist, 2: unkown, 3: Copyright, 4: Character, 5: Meta
     "incl_aliases": "y",
     "dbr_incl_deleted_alias": "y",
     "e6_incl_pending_alias": "n",
     "e6_incl_deleted_alias": "y",
+    "create_artist_wildcard": 4,  # 1: DBR, 2: E6, 3: Both, 4: None
+    "wildcard_sorting": 2,  # 1: Alphabetical, 2: Post count
 }
 
 # get the current directory of the script to save csvs in same dir
@@ -42,7 +46,7 @@ current_date = datetime.now().strftime("%Y_%m_%d")
 # seriously tho if i didn't think of YOU, yes YOU, the "person" (assuming) that's reading this hot garbage, i wouldn't have done this
 def get_input(prompt, default_value, cast_func=str):
     """Helper function to get input with a default value."""
-    user_input = input(f"{prompt} (Default = {default_value}): ")
+    user_input = input(f"{prompt}\n(Default = {default_value}): ")
     if user_input == "":
         return default_value
     try:
@@ -52,7 +56,7 @@ def get_input(prompt, default_value, cast_func=str):
         return default_value
 
 
-def options():  # TODO: add option to change underscore to space although this isnt really needed as the extensions this is for do that by themselves
+def options():
     print("To use the default of any option, just press enter.")
     choice_site = get_input(
         "Which site do you want to create a tag list from? (1|2|3)\n"
@@ -72,9 +76,9 @@ def options():  # TODO: add option to change underscore to space although this i
     if incl_aliases == "y":
         # Site-specific options
         # deleted has higher chance of having been trained by AI and pending is too recent/non existent
-        dbr_incl_deleted_alias = "y"
-        e6_incl_pending_alias = "n"
-        e6_incl_deleted_alias = "y"
+        dbr_incl_deleted_alias = DEFAULTS["dbr_incl_deleted_alias"]
+        e6_incl_pending_alias = DEFAULTS["e6_incl_pending_alias"]
+        e6_incl_deleted_alias = DEFAULTS["e6_incl_deleted_alias"]
 
         if choice_site in (1, 3):
             dbr_incl_deleted_alias = get_input(
@@ -94,6 +98,19 @@ def options():  # TODO: add option to change underscore to space although this i
         dbr_incl_deleted_alias = "n"
         e6_incl_pending_alias = "n"
         e6_incl_deleted_alias = "n"
+
+    create_artist_wildcard = get_input(
+        "Which site do you want to create a tag list from? (1|2|3)\n"
+        + "(1) Danbooru\n"
+        + "(2) e621\n"
+        + "(3) Both | Creates a separate list for each site + a merged list\n"
+        + "(4) None | Do not create this",
+        DEFAULTS["create_artist_wildcard"],
+        int,
+    ).lower()
+
+    if create_artist_wildcard():  # ignore this if condition for now
+        pass
 
     return {
         "choice_site": choice_site,
@@ -169,8 +186,6 @@ def get_dbr_jsons(settings, dbr_url: str):
             if not data:  # Break the loop if the data is empty (no more tags to fetch)
                 print(f"(DBR) No more data found at page {page}. Stopping...", flush=True)
                 break
-
-            
 
         tag_df = pd.concat([tag_df, pd.DataFrame(data)], ignore_index=True)
 
@@ -288,6 +303,7 @@ def download_and_unpack_gz(url):
 # endregion
 
 
+# region aliases|merge|save
 # almost final step: helper function to add aliases for DBR and E621 dataframes
 def add_aliases(df1: pd.DataFrame, df2: pd.DataFrame):  # df1 is tags, df2 is aliases
     """match consequent_name in df2 with names in df1, add aggregated antecedent_name as aliases in df1"""
@@ -323,9 +339,9 @@ def merge_dbr_e6_tags(df1, df2):  # merge dbr and e6 tags by name and with both 
     # Handle 'category': take the non-NaN value from either DataFrame and convert to int
     merged_df["category"] = merged_df["category_df1"].combine_first(merged_df["category_df2"]).astype(int)
 
-    # Handle 'post_count': calculate a weighted average, round, and convert to int
+    # Handle 'post_count': round numbers, and convert to int
     merged_df["post_count"] = (
-        ((merged_df["post_count_df1"].fillna(0) + merged_df["post_count_df2"].fillna(0)) / 2).round().astype(int)
+        ((merged_df["post_count_df1"].fillna(0) + merged_df["post_count_df2"].fillna(0))).round().astype(int)
     )
 
     # Combine aliases, removing duplicates
@@ -345,5 +361,7 @@ def save_df_as_csv(df, file_name_prefix):
     df.to_csv(output_path, index=False, header=False)
     print(f"CSV file has been saved as '{output_path}'")
 
+
+# endregion
 
 main()
