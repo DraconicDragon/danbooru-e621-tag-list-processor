@@ -14,11 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # initialize and update the submodule
-      - name: Initialize and update submodule
-        run: |
-          git submodule update --init --recursive
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -34,21 +29,15 @@ jobs:
         run: |
           printf "\n\n\n\n\n\n" | python dbr_e6_tag_processor.py
 
-      # move CSV files to respective directories in the submodule
-      - name: Move CSV files to submodule directories
+      # move csv files to tag-lists folder
+      - name: Move CSV files to tag-lists
         run: |
-          # navigate to submodule directory
-          cd dbr-e621-lists-archive
-
-          # move CSV files by file name prefix
-          mv ../DBR*.csv tag-lists/danbooru/
-          mv ../E6*.csv tag-lists/e621/
-          mv ../DBRE6*.csv tag-lists/danbooru_e621_combined/
-
-      # try commit and push changes to the submodule
-      - name: Commit and push changes to submodule
+          mkdir -p tag-lists
+          mv *.csv tag-lists/
+          
+      # try commit and push csv files saved by script
+      - name: Commit and push changes
         run: |
-          cd dbr-e621-lists-archive
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add tag-lists/*.csv
