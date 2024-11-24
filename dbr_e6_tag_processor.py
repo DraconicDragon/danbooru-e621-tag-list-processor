@@ -46,7 +46,7 @@ current_date = datetime.now().strftime("%Y_%m_%d")
 # seriously tho if i didn't think of YOU, yes YOU, the "person" (assuming) that's reading this hot garbage, i wouldn't have done this
 def get_input(prompt, default_value, cast_func=str):
     """Helper function to get input with a default value."""
-    user_input = input(f"{prompt}\n(Default = {default_value}): ")
+    user_input = input(f"\n{prompt}\n(Default = {default_value}): ")
     if user_input == "":
         return default_value
     try:
@@ -99,18 +99,18 @@ def options():
         e6_incl_pending_alias = "n"
         e6_incl_deleted_alias = "n"
 
-    create_artist_wildcard = get_input(
-        "Which site do you want to create a tag list from? (1|2|3)\n"
-        + "(1) Danbooru\n"
-        + "(2) e621\n"
-        + "(3) Both | Creates a separate list for each site + a merged list\n"
-        + "(4) None | Do not create this",
-        DEFAULTS["create_artist_wildcard"],
-        int,
-    ).lower()
+    # create_artist_wildcard = get_input(
+    #     "Which site do you want to create a tag list from? (1|2|3)\n"
+    #     + "(1) Danbooru\n"
+    #     + "(2) e621\n"
+    #     + "(3) Both | Creates a separate list for each site + a merged list\n"
+    #     + "(4) None | Do not create this",
+    #     DEFAULTS["create_artist_wildcard"],
+    #     int,
+    # ).lower()
 
-    if create_artist_wildcard():  # ignore this if condition for now
-        pass
+    # if create_artist_wildcard():  # ignore this if condition for now
+    #     pass
 
     return {
         "choice_site": choice_site,
