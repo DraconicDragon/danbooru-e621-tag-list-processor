@@ -10,8 +10,6 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-# TODO: theres really unnecessary and stupid math for the merged list that i should probably remove but i mean it doesnt really do any harm either and im lazy so it stays, maybe
-
 # region global vars
 
 E621_BASE_URL = "https://e621.net/db_export/"  # come in csv format compressed in gz file
