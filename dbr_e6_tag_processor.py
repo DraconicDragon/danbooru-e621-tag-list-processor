@@ -19,7 +19,7 @@ DBR_ALIAS_URL = "https://danbooru.donmai.us/tag_aliases.json?commit=Search&limit
 
 DEFAULTS = {
     "choice_site": 3,
-    "min_post_thresh": 40,  # default to 45 instead 50 cuz noobai apparently knows all artists presumably but not really?, some arent trained as much but some are
+    "min_post_thresh": 40,  # default to 40 instead 50 cuz noobai apparently knows all artists presumably but not really?, some arent trained as much but some are
     # problem: lower thresh = larger file, might cause performance issues with autocomplete speed (forge/a1111)? test needed
     # "included_categories": [0,1,2,3,4,5], # kinda useless for this program so is excluded; 0: General, 1: Artist, 2: unkown, 3: Copyright, 4: Character, 5: Meta
     "incl_aliases": "y",
