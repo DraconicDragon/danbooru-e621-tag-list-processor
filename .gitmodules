@@ -1,0 +1,3 @@
+[submodule "dbr-e621-lists-archive"]
+	path = dbr-e621-lists-archive
+	url = https://github.com/DraconicDragon/dbr-e621-lists-archive
