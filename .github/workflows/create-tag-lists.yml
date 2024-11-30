@@ -60,8 +60,7 @@ jobs:
           # Navigate to the submodule directory
           cd dbr-e621-lists-archive
           
-          # Pull the latest changes from the remote to ensure we're up-to-date (merge)
-          git pull origin main --no-rebase
+          git pull origin main --ff-only
           
           # Add the new files in the submodule
           git add tag-lists/danbooru/*
