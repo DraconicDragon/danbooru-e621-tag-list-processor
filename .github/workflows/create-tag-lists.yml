@@ -41,11 +41,11 @@ jobs:
           mkdir -p dbr-e621-lists-archive/tag-lists/danbooru
           mkdir -p dbr-e621-lists-archive/tag-lists/e621
           mkdir -p dbr-e621-lists-archive/tag-lists/danbooru_e621_combined
-          
+          ls
           # Move the generated CSV files into the appropriate submodule directories
           mv DBR*.csv dbr-e621-lists-archive/tag-lists/danbooru/
           mv E6*.csv dbr-e621-lists-archive/tag-lists/e621/
-          mv DBRE6*.csv dbr-e621-lists-archive/tag-lists/danbooru_e621_combined/
+          mv DBRE6_combi_tags_*.csv dbr-e621-lists-archive/tag-lists/danbooru_e621_combined/
 
       # Step to configure Git
       - name: Configure Git
