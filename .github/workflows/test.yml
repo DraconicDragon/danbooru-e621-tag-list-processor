@@ -1,0 +1,38 @@
+name: Update Submodule with Hello World
+
+on:
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  update-submodule:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the main repository with submodules
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive # Ensures submodule is checked out
+          TOKEN: ${{ secrets.GH_PAT }} # Use the repository's default GitHub token
+
+      # Step 2: Set up Git for committing to the submodule
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # Step 3: Create the hello_world.txt file in the submodule
+      - name: Create File in Submodule
+        run: |
+          echo "hello world" > dbr-e621-lists-archive/hello_world.txt
+          cd dbr-e621-lists-archive
+          git add hello_world.txt
+          git commit -m "Add hello_world.txt with 'hello world' content"
+
+      # Step 4: Push the changes to the submodule repository
+      - name: Push to Submodule
+        env:
+          TOKEN: ${{ secrets.GH_PAT }} # Use the repository's default GitHub token
+        run: |
+          cd dbr-e621-lists-archive
+          git push "https://${{ secrets.GH_PAT }}@github.com/DraconicDragon/dbr-e621-lists-archive.git" HEAD:main
