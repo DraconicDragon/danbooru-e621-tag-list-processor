@@ -2,21 +2,19 @@ name: Update Submodule with "Hello World"
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   update-submodule:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout main repository
+    - name: Checkout main repository with submodules
       uses: actions/checkout@v4
       with:
-        submodules: recursive # Ensure submodules are checked out
-
-    - name: Set up Git
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
+        submodules: recursive # Ensures submodules are fetched and updated
 
     - name: Navigate to submodule and create "hello_world.txt"
       run: |
@@ -24,8 +22,6 @@ jobs:
         echo "hello world" > hello_world.txt
         git add hello_world.txt
         git commit -m "Add hello_world.txt"
-
-    - name: Push changes to submodule repository
-      run: |
-        cd dbr-e621-lists-archive
-        git push origin main
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
