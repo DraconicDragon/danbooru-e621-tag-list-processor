@@ -2,52 +2,52 @@ name: Create e621, DBR, and DBRE6 merged tag lists and push to repo
 
 on:
   workflow_dispatch: # for manual triggering
-        inputs:
-          choice_site:
-            description: 'Select site (1: DBR, 2: E621, or 3: DBRE6 Merged )'
-            required: true
-            default: '3'
-            options:
-              - '1'
-              - '2'
-              - '3'
-          
-          min_post_thresh:
-            description: 'Minimum post threshold'
-            required: true
-            default: '40'
-    
-          incl_aliases:
-            description: 'Include aliases (y/n)'
-            required: true
-            default: 'y'
-            options:
-              - 'y'
-              - 'n'
-    
-          dbr_incl_deleted_alias:
-            description: 'Include deleted DBR aliases (y/n)'
-            required: true
-            default: 'y'
-            options:
-              - 'y'
-              - 'n'
-    
-          e6_incl_pending_alias:
-            description: 'Include pending E6 aliases (y/n)'
-            required: true
-            default: 'n'
-            options:
-              - 'y'
-              - 'n'
-    
-          e6_incl_deleted_alias:
-            description: 'Include deleted E6 aliases (y/n)'
-            required: true
-            default: 'y'
-            options:
-              - 'y'
-              - 'n'
+    inputs:
+      choice_site:
+        description: 'Select site (1: DBR, 2: E621, or 3: DBRE6 Merged )'
+        required: true
+        default: '3'
+        options:
+          - '1'
+          - '2'
+          - '3'
+      
+      min_post_thresh:
+        description: 'Minimum post threshold'
+        required: true
+        default: '40'
+  
+      incl_aliases:
+        description: 'Include aliases (y/n)'
+        required: true
+        default: 'y'
+        options:
+          - 'y'
+          - 'n'
+  
+      dbr_incl_deleted_alias:
+        description: 'Include deleted DBR aliases (y/n)'
+        required: true
+        default: 'y'
+        options:
+          - 'y'
+          - 'n'
+  
+      e6_incl_pending_alias:
+        description: 'Include pending E6 aliases (y/n)'
+        required: true
+        default: 'n'
+        options:
+          - 'y'
+          - 'n'
+  
+      e6_incl_deleted_alias:
+        description: 'Include deleted E6 aliases (y/n)'
+        required: true
+        default: 'y'
+        options:
+          - 'y'
+          - 'n'
   schedule:
     - cron: "0 0 1 */2 *"
 
