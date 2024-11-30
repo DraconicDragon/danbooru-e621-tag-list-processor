@@ -4,7 +4,7 @@ on:
   workflow_dispatch: # for manual triggering
         inputs:
           choice_site:
-            description: 'Select site (1, 2, or 3)'
+            description: 'Select site (1: DBR, 2: E621, or 3: DBRE6 Merged )'
             required: true
             default: '3'
             options:
@@ -13,7 +13,7 @@ on:
               - '3'
           
           min_post_thresh:
-            description: 'Minimum post threshold (enter a number)'
+            description: 'Minimum post threshold'
             required: true
             default: '40'
     
