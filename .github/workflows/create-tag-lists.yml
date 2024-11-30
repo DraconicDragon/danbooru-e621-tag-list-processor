@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the base repo and submodule
+      # Checkout the main repo
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          submodules: "true"  # ensures the submodule is checked out as well
+          submodules: recursive # Initialize submodules as well
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -26,49 +26,36 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # Execute the script to generate the CSV files
+      # Execute the script
       - name: Run Python script
         run: |
           printf "\n\n\n\n\n\n" | python dbr_e6_tag_processor.py
 
-      # Move CSV files to their respective directories in the submodule
+      # Move CSV files into appropriate submodule directories
       - name: Move CSV files to submodule directories
         run: |
-          # Ensure the directories exist in the submodule
           mkdir -p dbr-e621-lists-archive/tag-lists/danbooru
           mkdir -p dbr-e621-lists-archive/tag-lists/e621
           mkdir -p dbr-e621-lists-archive/tag-lists/danbooru_e621_combined
           
-          # Move the CSV files to their respective directories
-          if [ -f DBR*.csv ]; then mv DBR*.csv dbr-e621-lists-archive/tag-lists/danbooru/; fi
-          if [ -f E6*.csv ]; then mv E6*.csv dbr-e621-lists-archive/tag-lists/e621/; fi
-          if [ -f DBRE6*.csv ]; then mv DBRE6*.csv dbr-e621-lists-archive/tag-lists/danbooru_e621_combined/; fi
+          for file in *.csv; do
+            if [[ $file == DBR* ]]; then
+              mv "$file" dbr-e621-lists-archive/tag-lists/danbooru/
+            elif [[ $file == E6* ]]; then
+              mv "$file" dbr-e621-lists-archive/tag-lists/e621/
+            elif [[ $file == DBRE6* ]]; then
+              mv "$file" dbr-e621-lists-archive/tag-lists/danbooru_e621_combined/
+            fi
+          done
 
-      # Commit and push the changes to the submodule
-      - name: Commit and push changes to submodule
+      # Commit and push changes to the submodule
+      - name: Commit and push to submodule
         run: |
           cd dbr-e621-lists-archive
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add tag-lists/*.csv
-          git commit -m "Add/Update CSV files in submodule"
+          git add tag-lists/**/*.csv
+          git commit -m "Add/Update CSV files"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # Commit and push the changes to the submodule
-      - name: Commit and push changes to submodule
-        run: |
-          cd dbr-e621-lists-archive
-
-          # Ensure we are on the main branch
-          git checkout main || git checkout -b main
-
-          # Commit and push changes
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add tag-lists/*.csv
-          git commit -m "Add/Update CSV files in submodule"
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
