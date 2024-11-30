@@ -2,9 +2,6 @@ name: Update Submodule with "Hello World"
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   update-submodule:
