@@ -8,7 +8,8 @@ on:
 jobs:
   execute-script:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
       # Checkout the main repo
       - name: Checkout code
@@ -30,6 +31,15 @@ jobs:
       - name: Run Python script
         run: |
           printf "\n\n\n\n\n\n" | python dbr_e6_tag_processor.py
+
+      - name: Set up Git credentials
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          echo "https://$GITHUB_TOKEN@github.com" > ~/.git-credentials
+          git config --global credential.helper store
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
       # Move CSV files into appropriate submodule directories
       - name: Move CSV files to submodule directories
@@ -58,4 +68,4 @@ jobs:
           git commit -m "Add/Update CSV files"
           git push origin HEAD:main
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
