@@ -55,4 +55,20 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Commit and push the changes to the submodule
+      - name: Commit and push changes to submodule
+        run: |
+          cd dbr-e621-lists-archive
+
+          # Ensure we are on the main branch
+          git checkout main || git checkout -b main
+
+          # Commit and push changes
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add tag-lists/*.csv
+          git commit -m "Add/Update CSV files in submodule"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
