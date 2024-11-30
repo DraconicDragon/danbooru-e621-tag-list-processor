@@ -75,10 +75,11 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # Execute the script to generate the CSV files
+      # Execute the script to generate the CSV files # printf "\n\n\n\n\n\n" | python dbr_e6_tag_processor.py
       - name: Run Python script
         run: |
-          printf "\n\n\n\n\n\n" | python dbr_e6_tag_processor.py
+          printf "${{ github.event.inputs.choice_site }}\n${{ github.event.inputs.min_post_thresh }}\n${{ github.event.inputs.incl_aliases }}\n${{ github.event.inputs.dbr_incl_deleted_alias }}\n${{ github.event.inputs.e6_incl_pending_alias }}\n${{ github.event.inputs.e6_incl_deleted_alias }}\n" | python dbr_e6_tag_processor.py
+          
 
       # Create the folder structure and move the CSV files into submodule directories
       - name: Move CSV files into submodule directories
@@ -87,11 +88,12 @@ jobs:
           mkdir -p dbr-e621-lists-archive/tag-lists/danbooru
           mkdir -p dbr-e621-lists-archive/tag-lists/e621
           mkdir -p dbr-e621-lists-archive/tag-lists/danbooru_e621_combined
-          ls
+          
           # Move the generated CSV files into the appropriate submodule directories
-          mv DBR_*.csv dbr-e621-lists-archive/tag-lists/danbooru/
-          mv E6_*.csv dbr-e621-lists-archive/tag-lists/e621/
-          mv DBRE6_combi_tags_*.csv dbr-e621-lists-archive/tag-lists/danbooru_e621_combined/
+          [ -e DBR_*.csv ] && mv DBR_*.csv dbr-e621-lists-archive/tag-lists/danbooru/ || true
+          [ -e E6_*.csv ] && mv E6_*.csv dbr-e621-lists-archive/tag-lists/e621/ || true
+          [ -e DBRE6_combi_tags_*.csv ] && mv DBRE6_combi_tags_*.csv dbr-e621-lists-archive/tag-lists/danbooru_e621_combined/ || true
+
 
       # Step to configure Git
       - name: Configure Git
