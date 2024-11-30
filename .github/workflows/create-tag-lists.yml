@@ -53,19 +53,24 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Add, commit, and push changes to the submodule
       - name: Commit and Push Changes
         env:
           TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          # Add the new files in the submodule
+          # Navigate to the submodule directory
           cd dbr-e621-lists-archive
+          
+          # Pull the latest changes from the remote to ensure we're up-to-date
+          git pull origin main
+          
+          # Add the new files in the submodule
           git add tag-lists/danbooru/*
           git add tag-lists/e621/*
           git add tag-lists/danbooru_e621_combined/*
           
           # Commit the changes
           git commit -m "Update tag lists: DBR, E6, and DBRE6"
-
+      
           # Push the changes to the submodule repository
           git push "https://${{ secrets.GH_PAT }}@github.com/DraconicDragon/dbr-e621-lists-archive.git" HEAD:main
+
