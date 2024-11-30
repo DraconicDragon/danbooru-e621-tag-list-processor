@@ -8,8 +8,6 @@ on:
 jobs:
   execute-script:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       # Checkout the main repo
       - name: Checkout code
@@ -32,15 +30,6 @@ jobs:
         run: |
           printf "\n\n\n\n\n\n" | python dbr_e6_tag_processor.py
 
-      - name: Set up Git credentials
-        run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
-          echo "https://$GITHUB_TOKEN@github.com" > ~/.git-credentials
-          git config --global credential.helper store
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-
       # Move CSV files into appropriate submodule directories
       - name: Move CSV files to submodule directories
         run: |
@@ -58,14 +47,21 @@ jobs:
             fi
           done
 
+      - name: Checkout remote
+        uses: actions/checkout@v4
+        with:
+          repository: DraconicDragon/dbr-e621-lists-archive
+          ref: 'main'
+          token: ${{ secrets.GH_PAT }}
+        
+          
       # Commit and push changes to the submodule
       - name: Commit and push to submodule
         run: |
-          cd dbr-e621-lists-archive
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add tag-lists/**/*.csv
-          git commit -m "Add/Update CSV files"
-          git push origin HEAD:main
+          git commit -m "Update CSV files"
+          git push
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
