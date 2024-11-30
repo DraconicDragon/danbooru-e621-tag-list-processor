@@ -51,6 +51,7 @@ jobs:
           cd dbr-e621-lists-archive
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git pull
           git add tag-lists/*.csv
           git commit -m "Add/Update CSV files in submodule"
           git push origin HEAD:main
