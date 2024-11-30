@@ -120,16 +120,3 @@ jobs:
       
           # Push the changes to the submodule repository
           git push "https://${{ secrets.GH_PAT }}@github.com/DraconicDragon/dbr-e621-lists-archive.git" HEAD:main
-
-      #- name: Update submodule in the main repo
-        #run: |
-          # Go back to the main repository root
-          #cd ../..
-          
-          # Update the submodule to the latest commit
-          #git submodule update --remote dbr-e621-lists-archive
-          
-          # Commit and push the submodule update
-          #git add dbr-e621-lists-archive
-          git commit -m "Update submodule to latest commit"
-          git push "https://${{ secrets.GH_PAT }}@github.com/DraconicDragon/danbooru-e621-tag-list-processor" HEAD:main
