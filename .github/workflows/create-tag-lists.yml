@@ -60,7 +60,7 @@ jobs:
           # Navigate to the submodule directory
           cd dbr-e621-lists-archive
           
-          git pull origin main --ff-only
+          git pull origin main --no-rebase --allow-unrelated-histories
           
           # Add the new files in the submodule
           git add tag-lists/danbooru/*
