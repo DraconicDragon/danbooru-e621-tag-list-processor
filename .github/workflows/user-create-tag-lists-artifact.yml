@@ -1,0 +1,76 @@
+name: Create e621, DBR, and/or DBRE6 merged tag lists and upload artifact
+
+on:
+  workflow_dispatch: # for manual triggering
+    inputs:
+      choice_site:
+        description: 'Select site (1: DBR, 2: E621, or 3: DBRE6 Merged )'
+        required: true
+        default: '3'
+        options:
+          - '1'
+          - '2'
+          - '3'
+      
+      min_post_thresh:
+        description: 'Minimum post threshold'
+        required: true
+        default: '40'
+  
+      incl_aliases:
+        description: 'Include aliases (y/n)'
+        required: true
+        default: 'y'
+        options:
+          - 'y'
+          - 'n'
+  
+      dbr_incl_deleted_alias:
+        description: 'Include deleted DBR aliases (y/n)'
+        required: true
+        default: 'y'
+        options:
+          - 'y'
+          - 'n'
+  
+      e6_incl_pending_alias:
+        description: 'Include pending E6 aliases (y/n)'
+        required: true
+        default: 'n'
+        options:
+          - 'y'
+          - 'n'
+  
+      e6_incl_deleted_alias:
+        description: 'Include deleted E6 aliases (y/n)'
+        required: true
+        default: 'y'
+        options:
+          - 'y'
+          - 'n'
+
+jobs:
+  execute-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the base repo and submodule
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # Execute the script to generate the CSV files # printf "\n\n\n\n\n\n" | python dbr_e6_tag_processor.py
+      - name: Run Python script
+        run: |
+          printf "${{ github.event.inputs.choice_site }}\n${{ github.event.inputs.min_post_thresh }}\n${{ github.event.inputs.incl_aliases }}\n${{ github.event.inputs.dbr_incl_deleted_alias }}\n${{ github.event.inputs.e6_incl_pending_alias }}\n${{ github.event.inputs.e6_incl_deleted_alias }}\n" | python dbr_e6_tag_processor.py
