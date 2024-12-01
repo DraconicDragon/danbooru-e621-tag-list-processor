@@ -17,6 +17,11 @@ The tag lists should be saves in the same directory as the script when it's done
 
 #### Method 2 (Requires GitHub account): GitHub actions 
 - SOON:tm:
+- Fork this repo
+- Go to the "Actions" tab of the forked repo
+- Select the X on the left
+- Click X on the right and the workflow with optional custom settings
+- Wait for the workflow to finish and go to X and scroll down, you will be able to download the artifact there which should contain the output CSV file(s)
 
 Danbooru scraping part in the code was copied from here (many thank): https://github.com/BetaDoggo/danbooru-tag-list
 
