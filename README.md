@@ -13,7 +13,7 @@ The tag lists are automatically updated every 2 months by a GitHub actions workf
 - Run the script and answer the questions after which the processing begins.
 - You can also just spam enter to use the default values which will give you both Danbooru and e621 tag lists including active and deleted aliases and the merged list.
 
-The tag lists should be saves in the same directory as the script when it's done (to check you can just check the output, it should print out the location of the saved files.)
+The tag lists should be saved in the same directory as the script when it's done (to check you can just check the terminal output, it should print out the location of the saved files)
 
 #### Method 2 (Requires GitHub account): GitHub actions 
 - SOON:tm:
