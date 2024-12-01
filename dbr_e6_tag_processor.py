@@ -135,9 +135,9 @@ def main():
         df2 = process_e6_tags_csv(settings)
 
     if not df1.empty:
-        save_df_as_csv(df1, file_name_prefix="DBR_tags")  # TODO: change naming depending on user choice maybe?
+        save_df_as_csv(df1, file_name_prefix="danbooru_tags")  # TODO: change naming depending on user choice maybe?
     if not df2.empty:
-        save_df_as_csv(df2, file_name_prefix="E6_tags")
+        save_df_as_csv(df2, file_name_prefix="e621_tags")
     if not df1.empty and not df2.empty:
         merge_dbr_e6_tags(df1, df2)
 
