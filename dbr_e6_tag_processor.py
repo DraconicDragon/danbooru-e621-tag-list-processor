@@ -132,10 +132,10 @@ def main():
     if settings["choice_site"] == 1:
         df1 = process_dbr_tags(settings)
     elif settings["choice_site"] == 2:
-        df2 = process_e6_tags_csv(settings)
+        df2 = process_e621_tags_csv(settings)
     elif settings["choice_site"] == 3:
         df1 = process_dbr_tags(settings)
-        df2 = process_e6_tags_csv(settings)
+        df2 = process_e621_tags_csv(settings)
 
     if not df1.empty:
         save_df_as_csv(df1, file_name_prefix="danbooru_tags")  # TODO: change naming depending on options
@@ -173,7 +173,7 @@ def process_dbr_tags(settings):
 
 
 def get_dbr_jsons(settings, dbr_url: str):
-    """get tags and aliases from Danbooru jsons"""
+    """scrape tags and aliases from Danbooru jsons"""
     tag_df = pd.DataFrame()
 
     for page in range(1, 1001):
@@ -209,11 +209,11 @@ def get_dbr_jsons(settings, dbr_url: str):
 # region e621 processing
 
 
-def process_e6_tags_csv(settings):
+def process_e621_tags_csv(settings):
     """remove 'id' and 'created_at' column, sort by 'post_count', and filter 'post_count' >= 50"""
 
-    latest_file_url = get_latest_file_url(E621_BASE_URL, alias_requested=False)
-    unpacked_content = download_and_unpack_gz(latest_file_url)
+    latest_file_url = get_latest_e621_tags_file_url(E621_BASE_URL, alias_requested=False)
+    unpacked_content = download_and_unpack_gz_memory(latest_file_url)
     df = pd.read_csv(io.StringIO(unpacked_content))
 
     df = df[["name", "category", "post_count"]]
@@ -221,17 +221,17 @@ def process_e6_tags_csv(settings):
     df = df[df["post_count"] >= settings["min_post_thresh"]]
 
     if settings["incl_aliases"] == "y":
-        alias_df = process_e6_aliases_csv(settings)
+        alias_df = process_e621_aliases_csv(settings)
         return add_aliases(df, alias_df)
 
     else:
         return df
 
 
-def process_e6_aliases_csv(settings):
+def process_e621_aliases_csv(settings):
     """filter by 'status' == 'user choice' | then remove 'status' + 'id' + 'created_at' columns"""
-    latest_file_url = get_latest_file_url(E621_BASE_URL, alias_requested=True)
-    unpacked_content = download_and_unpack_gz(latest_file_url)
+    latest_file_url = get_latest_e621_tags_file_url(E621_BASE_URL, alias_requested=True)
+    unpacked_content = download_and_unpack_gz_memory(latest_file_url)
     df = pd.read_csv(io.StringIO(unpacked_content))
 
     if settings["e6_incl_deleted_alias"] == "n" and settings["e6_incl_pending_alias"] == "n":
@@ -252,7 +252,7 @@ def process_e6_aliases_csv(settings):
 # region download e6 gz tag files
 
 
-def get_latest_file_url(base_url, alias_requested: bool):
+def get_latest_e621_tags_file_url(base_url, alias_requested: bool):
     # Fetch the page content
     response = requests.get(base_url)
     response.raise_for_status()  # Ensure successful response
@@ -287,7 +287,7 @@ def get_latest_file_url(base_url, alias_requested: bool):
         raise ValueError("No valid file found on the page.")
 
 
-def download_and_unpack_gz(url):
+def download_and_unpack_gz_memory(url):
     print(f"(E621) Downloading file from {url}...")
     response = requests.get(url)
     response.raise_for_status()  # successful response insurance TM
