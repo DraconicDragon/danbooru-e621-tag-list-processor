@@ -138,9 +138,9 @@ def main():
         df2 = process_e621_tags_csv(settings)
 
     if not df1.empty:
-        save_df_as_csv(df1, file_name_prefix="danbooru_tags")  # TODO: change naming depending on options
+        save_df_as_csv(df1, filename_prefix="danbooru_tags")  # TODO: change naming depending on options
     if not df2.empty:
-        save_df_as_csv(df2, file_name_prefix="e621_tags")
+        save_df_as_csv(df2, filename_prefix="e621_tags")
     if not df1.empty and not df2.empty:
         merge_dbr_e6_tags(df1, df2)
 
@@ -354,7 +354,7 @@ def merge_dbr_e6_tags(df1, df2):  # merge dbr and e6 tags by name and with both 
     # Keep only the necessary columns
     result = merged_df[["name", "category", "post_count", "aliases"]]
 
-    save_df_as_csv(result, file_name_prefix="DBRE6_combi_tags")
+    save_df_as_csv(result, filename_prefix="DBRE6_combi_tags")
 
 
 def remove_useless_tags(): # TODO: implement this
@@ -362,8 +362,8 @@ def remove_useless_tags(): # TODO: implement this
     pass
 
 
-def save_df_as_csv(df, file_name_prefix, file_name_suffix):
-    output_path = os.path.join(current_directory, f"{file_name_prefix}_{current_date}.csv")
+def save_df_as_csv(df, filename_prefix, filename_suffix):
+    output_path = os.path.join(current_directory, f"{filename_prefix}_{current_date}.csv")
     df.to_csv(output_path, index=False, header=False)
     print(f"CSV file has been saved as '{output_path}'")
 
