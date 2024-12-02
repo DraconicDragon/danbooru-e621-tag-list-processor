@@ -37,7 +37,7 @@ DEFAULTS = {
 current_directory = os.path.dirname(__file__)
 
 # date in 'year_month_day' format, im pooping on both US and EU hieheheiheiheheie, jap. one fits better for this
-current_date = datetime.now().strftime("%Y_%m_%d")
+current_date = datetime.now().strftime("%Y-%m-%d")
 
 # endregion
 
@@ -362,7 +362,7 @@ def remove_useless_tags(): # TODO: implement this
     pass
 
 
-def save_df_as_csv(df, file_name_prefix):
+def save_df_as_csv(df, file_name_prefix, file_name_suffix):
     output_path = os.path.join(current_directory, f"{file_name_prefix}_{current_date}.csv")
     df.to_csv(output_path, index=False, header=False)
     print(f"CSV file has been saved as '{output_path}'")
