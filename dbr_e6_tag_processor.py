@@ -135,7 +135,7 @@ def main():
         df2 = process_e6_tags_csv(settings)
 
     if not df1.empty:
-        save_df_as_csv(df1, file_name_prefix="danbooru_tags")  # TODO: change naming depending on user choice maybe?
+        save_df_as_csv(df1, file_name_prefix="danbooru_tags")  # TODO: change naming depending on options
     if not df2.empty:
         save_df_as_csv(df2, file_name_prefix="e621_tags")
     if not df1.empty and not df2.empty:
@@ -352,6 +352,11 @@ def merge_dbr_e6_tags(df1, df2):  # merge dbr and e6 tags by name and with both 
     result = merged_df[["name", "category", "post_count", "aliases"]]
 
     save_df_as_csv(result, file_name_prefix="DBRE6_combi_tags")
+
+
+def remove_useless_tags():
+    """remove tags that are basically meta tags, like '' or 'conditional dnp'"""
+    pass
 
 
 def save_df_as_csv(df, file_name_prefix):
