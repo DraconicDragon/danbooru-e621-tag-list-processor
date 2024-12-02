@@ -12,6 +12,9 @@ from bs4 import BeautifulSoup
 
 # region global vars
 
+# TODO: make character/artist/copyright lists/wildcards
+### TODO: make character list with gender sorting 
+
 E621_BASE_URL = "https://e621.net/db_export/"  # come in csv format compressed in gz file
 
 DBR_BASE_URL = "https://danbooru.donmai.us/tags.json?limit=1000&search[hide_empty]=yes&search[is_deprecated]=no&search[order]=count"  # 1000 is upper limit
@@ -21,7 +24,7 @@ DEFAULTS = {
     "choice_site": 3,
     "min_post_thresh": 40,  # default to 40 instead 50 cuz noobai apparently knows all artists presumably but not really?, some arent trained as much but some are
     # problem: lower thresh = larger file, might cause performance issues with autocomplete speed (forge/a1111)? test needed
-    # "included_categories": [0,1,2,3,4,5], # kinda useless for this program so is excluded; 0: General, 1: Artist, 2: unkown, 3: Copyright, 4: Character, 5: Meta
+    # "included_categories": [0,1,2,3,4,5], # kinda useless for this program so is excluded; 0: General, 1: Artist, 2: unkown?, 3: Copyright, 4: Character, 5: Meta
     "incl_aliases": "y",
     "dbr_incl_deleted_alias": "y",
     "e6_incl_pending_alias": "n",
@@ -354,7 +357,7 @@ def merge_dbr_e6_tags(df1, df2):  # merge dbr and e6 tags by name and with both 
     save_df_as_csv(result, file_name_prefix="DBRE6_combi_tags")
 
 
-def remove_useless_tags():
+def remove_useless_tags(): # TODO: implement this
     """remove tags that are basically meta tags, like '' or 'conditional dnp'"""
     pass
 
