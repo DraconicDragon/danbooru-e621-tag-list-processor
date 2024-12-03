@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 # region global vars
 
 # TODO: make character/artist/copyright lists/wildcards
-### TODO: make character list with gender sorting 
+### TODO: make character list with gender sorting
 
 E621_BASE_URL = "https://e621.net/db_export/"  # come in csv format compressed in gz file
 
@@ -27,10 +27,10 @@ DEFAULTS = {
     # "included_categories": [0,1,2,3,4,5], # kinda useless for this program so is excluded; 0: General, 1: Artist, 2: unkown?, 3: Copyright, 4: Character, 5: Meta
     "incl_aliases": "y",
     "dbr_incl_deleted_alias": "y",
-    "e6_incl_pending_alias": "n",
+    "e6_incl_pending_alias": "n",  # shouldn't be needed
     "e6_incl_deleted_alias": "y",
-    "create_artist_wildcard": 4,  # 1: DBR, 2: E6, 3: Both, 4: None
-    "wildcard_sorting": 2,  # 1: Alphabetical, 2: Post count
+    # "create_artist_wildcard": 4,  # 1: DBR, 2: E6, 3: Both, 4: None
+    # "wildcard_sorting": 2,  # 1: Alphabetical, 2: Post count
 }
 
 # get the current directory of the script to save csvs in same dir
@@ -137,12 +137,26 @@ def main():
         df1 = process_dbr_tags(settings)
         df2 = process_e621_tags_csv(settings)
 
+    fn_suffix = (
+        f"pt{settings['min_post_thresh']}-"  # create file name suffix based on settings
+        f"{'ia-' if settings['dbr_incl_deleted_alias'] == 'y' else ''}"  # include 'ia-' if the setting is 'y'
+        + (  # include the following only if 'incl_aliases' is 'y'
+            f"{'dd-' if settings['dbr_incl_deleted_alias'] == 'y' else ''}"
+            f"{'ep-' if settings['e6_incl_pending_alias'] == 'y' else ''}"
+            f"{'ed-' if settings['e6_incl_deleted_alias'] == 'y' else ''}"
+            if settings["incl_aliases"] == "y"  # if is here
+            else ""
+        )
+    )
+    fn_suffix = fn_suffix.rstrip("-")
+
     if not df1.empty:
-        save_df_as_csv(df1, filename_prefix="danbooru_tags")  # TODO: change naming depending on options
+        save_df_as_csv(df1, filename_prefix="danbooru_tags", filename_suffix=fn_suffix)
     if not df2.empty:
-        save_df_as_csv(df2, filename_prefix="e621_tags")
+        save_df_as_csv(df2, filename_prefix="e621_tags", filename_suffix=fn_suffix)
     if not df1.empty and not df2.empty:
-        merge_dbr_e6_tags(df1, df2)
+        merged_list = merge_dbr_e6_tags(df1, df2)
+        save_df_as_csv(merged_list, filename_prefix="DBRE6_merged_tags", filename_suffix=fn_suffix)
 
 
 # endregion
@@ -342,28 +356,44 @@ def merge_dbr_e6_tags(df1, df2):  # merge dbr and e6 tags by name and with both 
 
     # Handle 'post_count': round numbers, and convert to int
     merged_df["post_count"] = (
-        ((merged_df["post_count_df1"].fillna(0) + merged_df["post_count_df2"].fillna(0))).round().astype(int)
+        (merged_df["post_count_df1"].fillna(0) + merged_df["post_count_df2"].fillna(0)).round().astype(int)
     )
 
-    # Combine aliases, removing duplicates
-    merged_df["aliases"] = merged_df["aliases_df1"].fillna("") + "," + merged_df["aliases_df2"].fillna("")
-    merged_df["aliases"] = merged_df["aliases"].str.split(",").apply(lambda x: ",".join(sorted(set(x))))
+    # Handle 'aliases' column safely
+    if "aliases_df1" in merged_df.columns or "aliases_df2" in merged_df.columns:
+        # Combine aliases from both DataFrames if they exist
+        aliases_df1 = merged_df["aliases_df1"].fillna("") if "aliases_df1" in merged_df.columns else ""
+        aliases_df2 = merged_df["aliases_df2"].fillna("") if "aliases_df2" in merged_df.columns else ""
+        merged_df["aliases"] = aliases_df1 + "," + aliases_df2
+        # Remove duplicates, trailing commas, and sort the aliases
+        merged_df["aliases"] = (
+            merged_df["aliases"]
+            .str.split(",")
+            .apply(lambda x: ",".join(sorted(set(filter(None, x)))))  # Remove empty strings and duplicates
+        )
+    else:
+        # Remove the aliases column entirely if neither DataFrame has it
+        merged_df = merged_df.drop(columns=["aliases_df1", "aliases_df2"], errors="ignore")
 
+    # Sort by 'post_count' descending
     merged_df = merged_df.sort_values(by="post_count", ascending=False)
 
-    # Keep only the necessary columns
-    result = merged_df[["name", "category", "post_count", "aliases"]]
+    # keep only the necessary columns
+    columns_to_keep = ["name", "category", "post_count"]
+    if "aliases" in merged_df.columns:
+        columns_to_keep.append("aliases")
+    result = merged_df[columns_to_keep]
 
-    save_df_as_csv(result, filename_prefix="DBRE6_combi_tags")
+    return result
 
 
-def remove_useless_tags(): # TODO: implement this
+def remove_useless_tags():  # TODO: implement this
     """remove tags that are basically meta tags, like '' or 'conditional dnp'"""
     pass
 
 
 def save_df_as_csv(df, filename_prefix, filename_suffix):
-    output_path = os.path.join(current_directory, f"{filename_prefix}_{current_date}.csv")
+    output_path = os.path.join(current_directory, f"{filename_prefix}_{current_date}_{filename_suffix}.csv")
     df.to_csv(output_path, index=False, header=False)
     print(f"CSV file has been saved as '{output_path}'")
 
