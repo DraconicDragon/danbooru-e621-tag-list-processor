@@ -27,5 +27,8 @@ Danbooru scraping part in the code was copied from here (many thank): https://gi
 
 im bad at repo titles
 
+## TODO
+Remove list archive as submodule and just link the repo from this readme, submodule purpose is different than i thought
+
 <sub>personal note regarding pandas because im too lazy to actually read it: dbr_e6_tag_processor.py:175: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
   tag_df = pd.concat([tag_df, pd.DataFrame(data)], ignore_index=True)</sub>
