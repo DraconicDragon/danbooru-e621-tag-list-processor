@@ -119,4 +119,4 @@ jobs:
           git commit -m "Update tag lists: DBR, E6, and DBRE6"
       
           # Push the changes to the submodule repository
-          git push "https://${{ secrets.GH_PAT }}@github.com/DraconicDragon/dbr-e621-lists-archive.git" HEAD:main
+          git push "https://${{ secrets.GH_PAT }}@github.com/DraconicDragon/dbr-e621-lists-archive.git" HEAD:main -f
