@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 
 # TODO: make character/artist/copyright lists/wildcards
 ### TODO: make character list with gender sorting
+### (involves scraping each character's first (few) posts to get gender tags)
 
 E621_BASE_URL = "https://e621.net/db_export/"  # come in csv format compressed in gz file
 
@@ -22,7 +23,7 @@ DBR_ALIAS_URL = "https://danbooru.donmai.us/tag_aliases.json?commit=Search&limit
 
 DEFAULTS = {
     "choice_site": 3,
-    "min_post_thresh": 40,  # default to 40 instead 50 cuz noobai apparently knows all artists presumably but not really?, some arent trained as much but some are
+    "min_post_thresh": 30,  # default to 40 instead 50 cuz noobai apparently knows all artists presumably but not really?, some arent trained as much but some are
     # problem: lower thresh = larger file, might cause performance issues with autocomplete speed (forge/a1111)? test needed
     # "included_categories": [0,1,2,3,4,5], # kinda useless for this program so is excluded; 0: General, 1: Artist, 2: unkown?, 3: Copyright, 4: Character, 5: Meta
     "incl_aliases": "y",
@@ -112,6 +113,8 @@ def options():
 
     # if create_artist_wildcard():  # ignore this if condition for now
     #     pass
+
+    # TODO: custom suffix?
 
     return {
         "choice_site": choice_site,
