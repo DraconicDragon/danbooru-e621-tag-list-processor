@@ -109,7 +109,8 @@ jobs:
           cd dbr-e621-lists-archive
           
           git pull origin main --no-rebase --allow-unrelated-histories
-          
+          git reset --hard origin/main
+
           # Add the new files in the submodule
           git add tag-lists/danbooru/*
           git add tag-lists/e621/*
