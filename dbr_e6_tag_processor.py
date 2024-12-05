@@ -10,6 +10,8 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+import wildcards
+
 # region global vars
 
 # TODO: make character/artist/copyright lists/wildcards
@@ -25,13 +27,14 @@ DEFAULTS = {
     "choice_site": 3,
     "min_post_thresh": 30,  # default to 30 instead 50 cuz noobai apparently knows all artists presumably but not really?, some arent trained as much but some are
     # problem: lower thresh = larger file, might cause performance issues with autocomplete speed (forge/a1111)? test needed
-    # "included_categories": [0,1,2,3,4,5], # kinda useless for this program so is excluded; 0: General, 1: Artist, 2: unkown?, 3: Copyright, 4: Character, 5: Meta
+    # "included_categories": [0,1,2,3,4,5], # kinda useless for this program so is excluded; 0: General, 1: Artist, 2: unkown?, 3: Copyright/series, 4: Character, 5: Meta
     "incl_aliases": "y",
     "dbr_incl_deleted_alias": "y",
     "e6_incl_pending_alias": "n",  # shouldn't be needed
     "e6_incl_deleted_alias": "y",
-    # "create_artist_wildcard": 4,  # 1: DBR, 2: E6, 3: Both, 4: None
-    # "wildcard_sorting": 2,  # 1: Alphabetical, 2: Post count
+    "create_wildcard": 4,  # 1: DBR, 2: E6, 3: Both, 4: None
+    "wildcard_categories": [1, 2, 3],  # 1: Artist, 2: Character, 3: Copyright/Series
+    # "wildcard_sorting": 2,  # 1: Alphabetical, 2: Post count # not needed with yaml wildcard
 }
 
 # get the current directory of the script to save csvs in same dir
@@ -60,6 +63,8 @@ def get_input(prompt, default_value, cast_func=str):
 
 def options():
     print("To use the default of any option, just press enter.")
+
+    # region tag options
     choice_site = get_input(
         "Which site do you want to create a tag list from? (1|2|3)\n"
         + "(1) Danbooru\n"
@@ -100,20 +105,38 @@ def options():
         dbr_incl_deleted_alias = "n"
         e6_incl_pending_alias = "n"
         e6_incl_deleted_alias = "n"
+    # endregion
 
-    # create_artist_wildcard = get_input(
-    #     "Which site do you want to create a tag list from? (1|2|3)\n"
-    #     + "(1) Danbooru\n"
-    #     + "(2) e621\n"
-    #     + "(3) Both | Creates a separate list for each site + a merged list\n"
-    #     + "(4) None | Do not create this",
-    #     DEFAULTS["create_artist_wildcard"],
-    #     int,
-    # ).lower()
+    # region wildcard options
+    create_wildcard = get_input(
+        "Which site do you want to create a wildcard from? (1|2|3|4)\n"
+        + "(1) Danbooru\n"
+        + "(2) e621\n"
+        + "(3) Both | Creates a separate list for each site + a merged list\n"
+        + "(4) None | Do not create this",
+        DEFAULTS["create_wildcard"],
+        int,
+    ).lower()
 
-    # if create_artist_wildcard():  # ignore this if condition for now
-    #     pass
-
+    # if selection is not 4 then ask what type of wildcard should be created (artist, character, series)
+    if create_wildcard != 4:
+        wildcard_categories = (
+            get_input(
+                "Which category do you want to create a wildcard from? (comma-separated multi option)\n"
+                + "(1) Artist names\n"
+                + "(2) Character names\n"
+                + "(3) Copyright/Franchise names\n"
+                + "Separate your options by a comma. E.g.: '1,2,3' for all categories.",
+                DEFAULTS["create_wildcard"],
+                str,
+            )
+            .lower()
+            .replace(" ", "")
+        )
+        wildcard_categories = [int(item) for item in wildcard_categories.split(",")] # example: [1,3] | [1,2,3]
+        if 2 in wildcard_categories:
+            print("WIP; Do you want to sort the character names by gender (female/male)")
+    # endregion
     # TODO: custom suffix?
 
     return {
@@ -123,14 +146,16 @@ def options():
         "dbr_incl_deleted_alias": dbr_incl_deleted_alias,
         "e6_incl_pending_alias": e6_incl_pending_alias,
         "e6_incl_deleted_alias": e6_incl_deleted_alias,
+        "create_wildcard": create_wildcard,
+        "wildcard_categories": wildcard_categories,
     }
 
 
 def main():
     settings = options()
 
-    df1 = pd.DataFrame()
-    df2 = pd.DataFrame()
+    df1 = pd.DataFrame()  # danbooru
+    df2 = pd.DataFrame()  # e621
 
     if settings["choice_site"] == 1:
         df1 = process_dbr_tags(settings)
