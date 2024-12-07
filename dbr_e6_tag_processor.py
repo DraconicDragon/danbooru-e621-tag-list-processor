@@ -12,6 +12,8 @@ from bs4 import BeautifulSoup
 
 import wildcards
 
+# todo: e621 category 5 is species while in dbr is meta tag
+
 # region global vars
 
 # TODO: make character/artist/copyright lists/wildcards
@@ -27,7 +29,8 @@ DEFAULTS = {
     "choice_site": 3,
     "min_post_thresh": 30,  # default to 30 instead 50 cuz noobai apparently knows all artists presumably but not really?, some arent trained as much but some are
     # problem: lower thresh = larger file, might cause performance issues with autocomplete speed (forge/a1111)? test needed
-    # "included_categories": [0,1,2,3,4,5], # kinda useless for this program so is excluded; 0: General, 1: Artist, 2: unkown?, 3: Copyright/series, 4: Character, 5: Meta
+    # "included_categories": [0,1,2,3,4,5], # kinda useless for this program so is excluded;
+    # 0: General, 1: Artist, 2: unkown?, 3: Copyright/series, 4: Character, 5: Meta DBR/ species e621, 6: disambiguation? e621, 7: Quality/Meta? e621?, 8: idk, lore e621?
     "incl_aliases": "y",
     "dbr_incl_deleted_alias": "y",
     "e6_incl_pending_alias": "n",  # shouldn't be needed
@@ -133,9 +136,9 @@ def options():
             .lower()
             .replace(" ", "")
         )
-        wildcard_categories = [int(item) for item in wildcard_categories.split(",")] # example: [1,3] | [1,2,3]
+        wildcard_categories = [int(item) for item in wildcard_categories.split(",")]  # example: [1,3] | [1,2,3]
         if 2 in wildcard_categories:
-            print("WIP; Do you want to sort the character names by gender (female/male)")
+            print("WIP ignore; Do you want to sort the character names by gender (female/male)")
     # endregion
     # TODO: custom suffix?
 
@@ -175,7 +178,7 @@ def main():
             if settings["incl_aliases"] == "y"  # if is here
             else ""
         )
-    )
+    )  # todo: remove ep/ed/dd depending on which file
     fn_suffix = fn_suffix.rstrip("-")
 
     if not df1.empty:
@@ -416,7 +419,7 @@ def merge_dbr_e6_tags(df1, df2):  # merge dbr and e6 tags by name and with both 
 
 
 def remove_useless_tags():  # TODO: implement this
-    """remove tags that are basically meta tags, like '' or 'conditional dnp'"""
+    """remove tags that are basically meta tags, like 'bad_pixiv_id' or 'conditional dnp'"""
     pass
 
 
