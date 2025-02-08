@@ -1,6 +1,7 @@
 # repo-specific
 /tag-list/
 /lists
+*.csv
 
 
 # Byte-compiled / optimized / DLL files
