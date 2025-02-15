@@ -53,7 +53,7 @@ def main():
         save_df_as_csv(e621_df, filename_prefix="e621", filename_suffix=fn_suffix)
     if not dbr_df.empty and not e621_df.empty:
         merged_list = merge_dbr_e6_tags(dbr_df, e621_df)
-        save_df_as_csv(merged_list, filename_prefix="danbooru_e621_merged", filename_suffix=fn_suffix)
+        save_df_as_csv(merged_list, filename_prefix="danbooru-e621-merged", filename_suffix=fn_suffix)
 
 
 if __name__ == "__main__":
