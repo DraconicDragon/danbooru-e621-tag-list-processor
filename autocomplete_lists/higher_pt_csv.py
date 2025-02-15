@@ -1,4 +1,5 @@
 import os
+import re
 
 import pandas as pd
 
@@ -6,7 +7,7 @@ import pandas as pd
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-fn_temp = "danbooru_e621_cat_swap_pt2.csv"
+fn_temp = "danbooru_e621_merged_tags_2024-12-22_pt25-ia-dd-ed_refined-aliases.csv"
 # danbooru_tags_2024-12-25_pt0-ia-dd-ed.csv
 # e621_tags_2024-12-25_pt0-ia-dd-ed.csv
 # DBRE6_merged_tags_2024-12-25_pt0-ia-dd-ed.csv
@@ -14,11 +15,15 @@ fn_temp = "danbooru_e621_cat_swap_pt2.csv"
 input_file = os.path.join(script_dir, fn_temp)
 
 # Extract the current threshold from filename
-current_threshold = int(fn_temp.split("_")[-1].split("pt")[1][0])
+match = re.search(r"pt(\d+)", fn_temp)
+if match:
+    current_threshold = int(match.group(1))
+else:
+    raise ValueError("Filename does not contain a valid threshold (e.g., 'pt25').")
 
 # user input for desired post count threshold
 # hardcoded because lazy, comment out with other stuff to make work otherwise, cryptic comment right here
-desired_threshold = 25
+desired_threshold = 25000
 while not True:
     try:
         desired_threshold = int(
