@@ -1,9 +1,6 @@
-from global_defaults import DBR_ALIAS_URL, DBR_BASE_URL, DEFAULTS, E621_BASE_URL
+from global_defaults import DEFAULTS
 
 
-# region main start + user input
-# i fricking hate user input managing, i hate it so much, i hate it so much - i hate it so much - github copilot
-# seriously tho if i didn't think of YOU, yes YOU, the "person" (assuming) that's reading this hot garbage, i wouldn't have done this
 def get_input(prompt, default_value, cast_func=str):
     """Helper function to get input with a default value."""
     user_input = input(f"\n{prompt}\n(Default = {default_value}): ")
@@ -63,37 +60,38 @@ def options():
     # endregion
 
     # region wildcard options
-    create_wildcard = get_input(
-        "Which site do you want to create a wildcard from? (1|2|3|4)\n"
-        + "(1) Danbooru\n"
-        + "(2) e621\n"
-        + "(3) Both | Creates a separate list for each site + a merged list\n"
-        + "(4) None | Do not create this",
-        DEFAULTS["create_wildcard"],
-        int,
-    )
-    # if selection is not 4 then ask what type of wildcard should be created (artist, character, series)
-    if create_wildcard != 4:
-        wildcard_categories = (
-            get_input(
-                "Which category do you want to create a wildcard from? (comma-separated multi option)\n"
-                + "(1) Artist names\n"
-                + "(2) Character names\n"
-                + "(3) Copyright/Franchise names\n"
-                + "Separate your options by a comma. E.g.: '1,2,3' for all categories.",
-                DEFAULTS["wildcard_categories"],
-                str,
-            )
-            .lower()
-            .replace(" ", "")
-        )
-        wildcard_categories = [int(item) for item in wildcard_categories.split(",")]  # example: [1,3] | [1,2,3]
-        if 2 in wildcard_categories:
-            print("WIP ignore; Do you want to sort the character names by gender (female/male)")
-    else:
-        wildcard_categories = DEFAULTS["wildcard_categories"]
+    # create_wildcard = get_input(
+    #     "Which site do you want to create a wildcard from? (1|2|3|4)\n"
+    #     + "(1) Danbooru\n"
+    #     + "(2) e621\n"
+    #     + "(3) Both | Creates a separate list for each site + a merged list\n"
+    #     + "(4) None | Do not create this",
+    #     DEFAULTS["create_wildcard"],
+    #     int,
+    # )
+    # # if selection is not 4 then ask what type of wildcard should be created (artist, character, series)
+    # if create_wildcard != 4:
+    #     wildcard_categories = (
+    #         get_input(
+    #             "Which category do you want to create a wildcard from? (comma-separated multi option)\n"
+    #             + "(1) Artist names\n"
+    #             + "(2) Character names\n"
+    #             + "(3) Copyright/Franchise names\n"
+    #             + "Separate your options by a comma. E.g.: '1,2,3' for all categories.",
+    #             DEFAULTS["wildcard_categories"],
+    #             str,
+    #         )
+    #         .lower()
+    #         .replace(" ", "")
+    #     )
+    #     wildcard_categories = [int(item) for item in wildcard_categories.split(",")]  # example: [1,3] | [1,2,3]
+    #     if 2 in wildcard_categories:
+    #         print("WIP ignore; Do you want to sort the character names by gender (female/male)")
+    # else:
+    #     wildcard_categories = DEFAULTS["wildcard_categories"]
     # endregion
-    # TODO: custom suffix?
+    
+    # TODO: custom suffix?, custom filename?
 
     return {
         "choice_site": choice_site,
@@ -102,9 +100,6 @@ def options():
         "dbr_incl_deleted_alias": dbr_incl_deleted_alias,
         "e6_incl_pending_alias": e6_incl_pending_alias,
         "e6_incl_deleted_alias": e6_incl_deleted_alias,
-        "create_wildcard": create_wildcard,
-        "wildcard_categories": wildcard_categories,
+        # "create_wildcard": create_wildcard,
+        # "wildcard_categories": wildcard_categories,
     }
-
-
-# endregion
