@@ -3,20 +3,20 @@ from datetime import datetime
 
 import pandas as pd
 
-from danbooru import process_dbr_tags
-from e621 import process_e621_tags_csv
 from input_manager import options
-from tag_list_utils import merge_dbr_e6_tags
+from tag_lists.danbooru import process_dbr_tags
+from tag_lists.e621 import process_e621_tags_csv
+from tag_lists.tag_list_utils import merge_dbr_e6_tags
 
 # get the current directory of the script to save csvs in same dir
 current_directory = os.path.dirname(__file__)
 
-# date in 'year_month_day' format, im pooping on both US and EU hieheheiheiheheie, jap. one fits better for this
+# date in 'year-month-day' format, im pooping on both US and EU hieheheiheiheheie, jap. one fits better for this
 current_date = datetime.now().strftime("%Y-%m-%d")
 
 
 def save_df_as_csv(df, filename_prefix, filename_suffix):
-    output_path = os.path.join(current_directory, f"{filename_prefix}_{current_date}_{filename_suffix}.csv")
+    output_path = os.path.join(current_directory, f"zlists/{filename_prefix}_{current_date}_{filename_suffix}.csv")
     df.to_csv(output_path, index=False, header=False)
     print(f"CSV file has been saved as '{output_path}'")
 
@@ -24,16 +24,15 @@ def save_df_as_csv(df, filename_prefix, filename_suffix):
 def main():
     settings = options()
 
-    df1 = pd.DataFrame()  # danbooru
-    df2 = pd.DataFrame()  # e621
+    dbr_df, e621_df = pd.DataFrame(), pd.DataFrame()
 
     if settings["choice_site"] == 1:
-        df1 = process_dbr_tags(settings)
+        dbr_df = process_dbr_tags(settings)
     elif settings["choice_site"] == 2:
-        df2 = process_e621_tags_csv(settings)
+        e621_df = process_e621_tags_csv(settings)
     elif settings["choice_site"] == 3:
-        df1 = process_dbr_tags(settings)
-        df2 = process_e621_tags_csv(settings)
+        dbr_df = process_dbr_tags(settings)
+        e621_df = process_e621_tags_csv(settings)
 
     fn_suffix = (
         f"pt{settings['min_post_thresh']}-"  # create file name suffix based on settings
@@ -48,12 +47,12 @@ def main():
     )  # todo: remove ep/ed/dd depending on which file
     fn_suffix = fn_suffix.rstrip("-")
 
-    if not df1.empty:
-        save_df_as_csv(df1, filename_prefix="danbooru_tags", filename_suffix=fn_suffix)
-    if not df2.empty:
-        save_df_as_csv(df2, filename_prefix="e621_tags", filename_suffix=fn_suffix)
-    if not df1.empty and not df2.empty:
-        merged_list = merge_dbr_e6_tags(df1, df2)
+    if not dbr_df.empty:
+        save_df_as_csv(dbr_df, filename_prefix="danbooru_tags", filename_suffix=fn_suffix)
+    if not e621_df.empty:
+        save_df_as_csv(e621_df, filename_prefix="e621_tags", filename_suffix=fn_suffix)
+    if not dbr_df.empty and not e621_df.empty:
+        merged_list = merge_dbr_e6_tags(dbr_df, e621_df)
         save_df_as_csv(merged_list, filename_prefix="DBRE6_merged_tags", filename_suffix=fn_suffix)
 
 

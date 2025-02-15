@@ -2,12 +2,15 @@
 
 from datetime import datetime
 import gzip
+import io
 import re
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
+import pandas as pd
 import requests
 
 from global_defaults import E621_BASE_URL
+from tag_lists.tag_list_utils import add_aliases
 
 
 def process_e621_tags_csv(settings):

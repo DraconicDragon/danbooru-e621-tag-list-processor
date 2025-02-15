@@ -10,6 +10,9 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+from global_defaults import DBR_ALIAS_URL, DBR_BASE_URL
+from tag_lists.tag_list_utils import add_aliases
+
 # todo: e621 category 5 is species while in dbr is meta tag
 
 # region global vars
