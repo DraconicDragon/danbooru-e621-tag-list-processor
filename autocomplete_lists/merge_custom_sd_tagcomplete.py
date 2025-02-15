@@ -1,5 +1,11 @@
 import os
+
 import pandas as pd
+
+# this script merges 2 dataframes and takes the first df's value if the same tag exists across two dataframes
+# female,0,23023,"aaaa"
+# female,0,64823,"girl,2girl"
+# equals: female,0,23023,"aaaa,girl,2girl"
 
 # Get the directory of the script
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,15 +24,20 @@ merged_df = pd.concat([dbr_df, e6_df], ignore_index=True)
 # Group by the first column (index 0) and aggregate
 # Second and third columns (index 1 and 2) are taken from the first CSV (dbr_df)
 # Fourth column (index 3) is a concatenation of unique values from both
-result_df = (
-    merged_df.groupby(0, as_index=False)
-    .agg({
-        1: 'first',  # Take the first value (from danbooru CSV)
-        2: 'first',  # Take the first value (from danbooru CSV)
-        3: lambda x: ','.join(sorted(set(
-            [item.strip() for val in x.dropna() for item in val.split(',') if item.strip()]  # Flatten and deduplicate
-        )))  # Merge unique, non-NaN strings and remove duplicates
-    })
+result_df = merged_df.groupby(0, as_index=False).agg(
+    {
+        1: "first",  # Take the first value (from danbooru CSV)
+        2: "first",  # Take the first value (from danbooru CSV)
+        3: lambda x: ",".join(
+            sorted(
+                set(
+                    [
+                        item.strip() for val in x.dropna() for item in val.split(",") if item.strip()
+                    ]  # Flatten and deduplicate
+                )
+            )
+        ),  # Merge unique, non-NaN strings and remove duplicates
+    }
 )
 
 
