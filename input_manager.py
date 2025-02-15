@@ -37,7 +37,7 @@ def options():
 
     if incl_aliases == "y":
         # Site-specific options
-        # deleted has higher chance of having been trained by AI and pending is too recent/non existent
+        # deleted aliases are tags that are no longer in use by the site but might be useful for autocomplete
         dbr_incl_deleted_alias = DEFAULTS["dbr_incl_deleted_alias"]
         e6_incl_pending_alias = DEFAULTS["e6_incl_pending_alias"]
         e6_incl_deleted_alias = DEFAULTS["e6_incl_deleted_alias"]
