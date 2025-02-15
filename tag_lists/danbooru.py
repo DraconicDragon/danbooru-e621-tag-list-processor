@@ -13,22 +13,6 @@ from bs4 import BeautifulSoup
 from global_defaults import DBR_ALIAS_URL, DBR_BASE_URL
 from tag_lists.tag_list_utils import add_aliases
 
-# todo: e621 category 5 is species while in dbr is meta tag
-
-# region global vars
-
-# TODO: make character/artist/copyright lists/wildcards
-### TODO: make character list with gender sorting
-### (involves scraping each character's first (few) posts to get gender tags)
-
-
-
-
-# endregion
-
-
-# region danbooru processing
-
 
 def process_dbr_tags(settings):
     df1 = get_dbr_jsons(settings, DBR_BASE_URL)
@@ -77,9 +61,6 @@ def get_dbr_jsons(settings, dbr_url: str):
                     return tag_df  # Return early if the condition is met
         else:
             print(f"(DBR) Page {page} aliases processed...", flush=True)
-        time.sleep(0.3)  # Sleep for 0.3 second because i guess it helps with ratelimits?
+        time.sleep(0.1)  # Sleep for 0.3 second because i guess it helps with ratelimits?
 
     return tag_df
-
-
-# endregion
