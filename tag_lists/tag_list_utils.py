@@ -1,4 +1,7 @@
 # almost final step: helper function to add aliases for DBR and E621 dataframes
+import json
+import os
+
 import pandas as pd
 
 
@@ -66,49 +69,45 @@ def merge_dbr_e6_tags(dbr_df, e621_df):
     return result_df
 
 
-# todo: IMPORTANT: REWORK, IGNORE BOTTOM CODE
-# actual final step kinda#
-# TODO: USE E621 HIGHER CATEGORY CSV/DATAFRAME TO MERGE WITH DBR TAGS; sd webui tagcomplete compat + cleaner
-def merge_dbr_e6_tags_old(df1, df2):  # merge dbr and e6 tags by name and with both aliases
-    # merge DataFrames on 'name'
-    merged_df = pd.merge(df1, df2, on="name", how="outer", suffixes=("_df1", "_df2"))
-
-    # Handle 'category': take the non-NaN value from either DataFrame and convert to int
-    merged_df["category"] = merged_df["category_df1"].combine_first(merged_df["category_df2"]).astype(int)
-
-    # Handle 'post_count': round numbers, and convert to int
-    merged_df["post_count"] = (
-        (merged_df["post_count_df1"].fillna(0) + merged_df["post_count_df2"].fillna(0)).round().astype(int)
-    )
-
-    # Handle 'aliases' column safely
-    if "aliases_df1" in merged_df.columns or "aliases_df2" in merged_df.columns:
-        # Combine aliases from both DataFrames if they exist
-        aliases_df1 = merged_df["aliases_df1"].fillna("") if "aliases_df1" in merged_df.columns else ""
-        aliases_df2 = merged_df["aliases_df2"].fillna("") if "aliases_df2" in merged_df.columns else ""
-        merged_df["aliases"] = aliases_df1 + "," + aliases_df2
-        # Remove duplicates, trailing commas, and sort the aliases
-        merged_df["aliases"] = (
-            merged_df["aliases"]
-            .str.split(",")
-            .apply(lambda x: ",".join(sorted(set(filter(None, x)))))  # Remove empty strings and duplicates
-        )
-    else:
-        # Remove the aliases column entirely if neither DataFrame has it
-        merged_df = merged_df.drop(columns=["aliases_df1", "aliases_df2"], errors="ignore")
-
-    # Sort by 'post_count' descending
-    merged_df = merged_df.sort_values(by="post_count", ascending=False)
-
-    # keep only the necessary columns
-    columns_to_keep = ["name", "category", "post_count"]
-    if "aliases" in merged_df.columns:
-        columns_to_keep.append("aliases")
-    result = merged_df[columns_to_keep]
-
-    return result
-
-
-def remove_useless_tags():  # TODO: implement this; its clean_useless_tags.py; import from there soon:TM:?
+def remove_useless_tags(df):
     """remove tags that are basically meta tags, like 'bad_pixiv_id' or 'conditional dnp'"""
-    pass
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Construct the path to the blacklisted_tags.json file
+    blacklisted_tags_file = os.path.join(script_dir, "..", "blacklisted_tags.json")
+
+    with open(blacklisted_tags_file, "r") as f:
+        blacklisted_tags_data = json.load(f)
+
+    # Combine all blacklisted tags from both categories into a single list
+    blacklisted_tags = blacklisted_tags_data.get("dbr", []) + blacklisted_tags_data.get("e621", [])
+
+    # Filter out rows that contain blacklisted tags
+    df = df[~df["name"].isin(blacklisted_tags)]
+    return df
+
+
+def sanitize_aliases_merged(df):
+    "removes aliases that exist as normal tags in name column"
+    df["aliases"] = df["aliases"].fillna("")
+
+    # get all tags from column 1 into a set
+    all_tags = set(df[0].str.strip())
+
+    def remove_duplicate_tags(row):
+        tags = row["aliases"].strip()
+
+        if not tags:  # skip empty tags
+            return tags
+
+        # split the aliases into list, strip spaces, remove any alias tag that already appears in column 1
+        tag_list = [tag.strip() for tag in tags.split(",")]
+        filtered_tags = [tag for tag in tag_list if tag not in all_tags]
+
+        return ",".join(filtered_tags)
+
+    # start filter column 4
+    df["aliases"] = df.apply(remove_duplicate_tags, axis=1)
+
+    return df

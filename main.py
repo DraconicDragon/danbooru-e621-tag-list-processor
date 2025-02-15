@@ -6,7 +6,11 @@ import pandas as pd
 from input_manager import options
 from tag_lists.danbooru import process_dbr_tags
 from tag_lists.e621 import process_e621_tags_csv
-from tag_lists.tag_list_utils import merge_dbr_e6_tags
+from tag_lists.tag_list_utils import (
+    merge_dbr_e6_tags,
+    remove_useless_tags,
+    sanitize_aliases_merged,
+)
 
 # get the current directory of the script to save csvs in same dir
 current_directory = os.path.dirname(__file__)
@@ -48,12 +52,15 @@ def main():
     fn_suffix = fn_suffix.rstrip("-")
 
     if not dbr_df.empty:
+        dbr_df = remove_useless_tags(dbr_df)  # clean unneeded tags
         save_df_as_csv(dbr_df, filename_prefix="danbooru", filename_suffix=fn_suffix)
     if not e621_df.empty:
+        e621_df = remove_useless_tags(e621_df)  # clean unneeded tags
         save_df_as_csv(e621_df, filename_prefix="e621", filename_suffix=fn_suffix)
     if not dbr_df.empty and not e621_df.empty:
-        merged_list = merge_dbr_e6_tags(dbr_df, e621_df)
-        save_df_as_csv(merged_list, filename_prefix="danbooru-e621-merged", filename_suffix=fn_suffix)
+        merged_df = merge_dbr_e6_tags(dbr_df, e621_df)
+        merged_df = sanitize_aliases_merged(merged_df)  # clean aliases so autocompletes dont reference wrong tags
+        save_df_as_csv(merged_df, filename_prefix="danbooru_e621_merged", filename_suffix=fn_suffix)
 
 
 if __name__ == "__main__":
