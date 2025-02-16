@@ -75,7 +75,7 @@ def remove_useless_tags(df):
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Construct the path to the blacklisted_tags.json file
-    blacklisted_tags_file = os.path.join(script_dir, "..", "blacklisted_tags.json")
+    blacklisted_tags_file = os.path.abspath(os.path.join(script_dir, "..", "blacklisted_tags.json"))
 
     with open(blacklisted_tags_file, "r") as f:
         blacklisted_tags_data = json.load(f)
@@ -93,7 +93,7 @@ def sanitize_aliases_merged(df):
     df["aliases"] = df["aliases"].fillna("")
 
     # get all tags from column 1 into a set
-    all_tags = set(df[0].str.strip())
+    all_tags = set(df["name"].str.strip())
 
     def remove_duplicate_tags(row):
         tags = row["aliases"].strip()
