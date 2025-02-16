@@ -1,6 +1,7 @@
 # repo-specific
 /tag-list/
 /lists
+/tag_lists_ouput/*
 *.csv
 
 
