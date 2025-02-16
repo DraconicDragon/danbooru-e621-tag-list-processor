@@ -25,26 +25,29 @@ def save_df_as_csv(df, filename_prefix, filename_suffix):
     # Create the folder if it doesn't exist, exist_ok=True prevent error if already exists
     os.makedirs(output_folder, exist_ok=True)
 
-    # todo: handle existing csv
-    output_path = os.path.join(
-        output_folder, f"{filename_prefix}_{current_date}_{filename_suffix}.csv"
-    )
+    # todo: handle existing csv, if exist with same settings, try tow ork with that, or skip
+    output_path = os.path.join(output_folder, f"{filename_prefix}_{current_date}_{filename_suffix}.csv")
     df.to_csv(output_path, index=False, header=False)
+    print(f"CSV file has been saved as '{output_path}'")
+
+
+def save_krita_csv(df, is_e621_df):  # todo: implement
+    output_folder = os.path.join(current_directory, "tag_lists_output", "krita_ai_compatible")
+
+    # Create the folder if it doesn't exist, exist_ok=True prevent error if already exists
+    os.makedirs(output_folder, exist_ok=True)
+
+    if is_e621_df:
+        output_path = os.path.join(output_folder, f"e621 NSFW.csv")
+    else:
+        output_path = os.path.join(output_folder, f"Danbooru NSFW.csv")
+
+    df.to_csv(output_path, index=False, header=True)
     print(f"CSV file has been saved as '{output_path}'")
 
 
 def main():
     settings = options()
-
-    dbr_df, e621_df = pd.DataFrame(), pd.DataFrame()
-
-    if settings["choice_site"] == 1:
-        dbr_df = process_dbr_tags(settings)
-    elif settings["choice_site"] == 2:
-        e621_df = process_e621_tags_csv(settings)
-    elif settings["choice_site"] == 3:
-        dbr_df = process_dbr_tags(settings)
-        e621_df = process_e621_tags_csv(settings)
 
     fn_suffix = (
         f"pt{settings['min_post_thresh']}-"  # create file name suffix based on settings
@@ -58,6 +61,16 @@ def main():
         )
     )  # todo: remove ep/ed/dd depending on which file
     fn_suffix = fn_suffix.rstrip("-")
+
+    dbr_df, e621_df = pd.DataFrame(), pd.DataFrame()
+
+    if settings["choice_site"] == 1:
+        dbr_df = process_dbr_tags(settings)
+    elif settings["choice_site"] == 2:
+        e621_df = process_e621_tags_csv(settings)
+    elif settings["choice_site"] == 3:
+        dbr_df = process_dbr_tags(settings)
+        e621_df = process_e621_tags_csv(settings)
 
     if not dbr_df.empty:
         dbr_df = remove_useless_tags(dbr_df)  # clean unneeded tags
