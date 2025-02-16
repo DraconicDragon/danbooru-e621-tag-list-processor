@@ -1,14 +1,7 @@
-import gzip
-import io
-import os
-import re
 import time
-from datetime import datetime
-from urllib.parse import urljoin
 
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
 
 from global_defaults import DBR_ALIAS_URL, DBR_BASE_URL
 from tag_lists.tag_list_utils import add_aliases
@@ -61,6 +54,6 @@ def get_dbr_jsons(settings, dbr_url: str):
                     return tag_df  # Return early if the condition is met
         else:
             print(f"(DBR) Page {page} aliases processed...", flush=True)
-        time.sleep(0.1)  # Sleep for 0.3 second because i guess it helps with ratelimits?
+        time.sleep(0.25)  # Sleep for 0.25 second because i guess it helps with ratelimits?
 
     return tag_df
