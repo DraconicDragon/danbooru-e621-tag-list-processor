@@ -31,7 +31,11 @@ def options():
         DEFAULTS["min_post_thresh"],
         int,
     )
-    incl_aliases = get_input("Do you want to include alias tags? (y/N)", DEFAULTS["incl_aliases"]).lower()
+    incl_aliases = get_input(
+        "Do you want to include alias tags? (y/N)",
+        DEFAULTS["incl_aliases"],
+        str,
+    ).lower()
 
     if incl_aliases == "y":
         # Site-specific options
@@ -58,6 +62,13 @@ def options():
         dbr_incl_deleted_alias = "n"
         e6_incl_pending_alias = "n"
         e6_incl_deleted_alias = "n"
+
+    create_krita_csv = get_input(
+        "Do you want to create Krita AI compatible CSV files? (y/N)",
+        DEFAULTS["create_krita_csv"],
+        str,
+    ).lower()
+
     # endregion
 
     # region wildcard options
@@ -101,6 +112,7 @@ def options():
         "dbr_incl_deleted_alias": dbr_incl_deleted_alias,
         "e6_incl_pending_alias": e6_incl_pending_alias,
         "e6_incl_deleted_alias": e6_incl_deleted_alias,
+        "create_krita_csv": create_krita_csv,
         # "create_wildcard": create_wildcard,
         # "wildcard_categories": wildcard_categories,
     }

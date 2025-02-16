@@ -59,7 +59,9 @@ def main():
             if settings["incl_aliases"] == "y"  # if is here
             else ""
         )
-    )  # todo: remove ep/ed/dd depending on which file
+    )
+    # todo: remove ep/ed/dd depending on which file; actually isnt this completely broken?
+    # overcomplicated garbage i forgot how it does things anyway but too lazy to rewrite rn
     fn_suffix = fn_suffix.rstrip("-")
 
     dbr_df, e621_df = pd.DataFrame(), pd.DataFrame()
@@ -83,6 +85,11 @@ def main():
         merged_df = sanitize_aliases_merged(merged_df)  # clean aliases so autocompletes dont reference wrong tags
         save_df_as_csv(merged_df, filename_prefix="danbooru_e621_merged", filename_suffix=fn_suffix)
 
+    if settings["create_krita_csv"] == "y":
+        if not dbr_df.empty:
+            save_krita_csv(dbr_df, is_e621_df=False)
+        if not e621_df.empty:
+            save_krita_csv(e621_df, is_e621_df=True)
 
 if __name__ == "__main__":
     main()

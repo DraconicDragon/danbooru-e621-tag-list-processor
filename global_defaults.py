@@ -12,6 +12,7 @@ DEFAULTS = {
     "dbr_incl_deleted_alias": "y",
     "e6_incl_pending_alias": "n",  # shouldn't be needed usually
     "e6_incl_deleted_alias": "y",
+    "create_krita_csv": "n",  # creates krita compatible autocomplete csvs
     "create_wildcard": 4,  # 1: DBR, 2: E6, 3: Both, 4: None
     # NOTE: wildcard stuff not in use currently, will probably be separate stuff
     "wildcard_categories": [1, 2, 3],  # 1: Artist, 2: Character, 3: Copyright/Series
