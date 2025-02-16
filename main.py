@@ -24,9 +24,11 @@ def save_df_as_csv(df, filename_prefix, filename_suffix):
 
     # Create the folder if it doesn't exist, exist_ok=True prevent error if already exists
     os.makedirs(output_folder, exist_ok=True)
-    
+
     # todo: handle existing csv
-    output_path = os.path.join(output_folder, f"tag_lists_output/{filename_prefix}_{current_date}_{filename_suffix}.csv")
+    output_path = os.path.join(
+        output_folder, f"{filename_prefix}_{current_date}_{filename_suffix}.csv"
+    )
     df.to_csv(output_path, index=False, header=False)
     print(f"CSV file has been saved as '{output_path}'")
 
