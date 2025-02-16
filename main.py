@@ -62,6 +62,7 @@ def main():
     )
     # todo: remove ep/ed/dd depending on which file; actually isnt this completely broken?
     # overcomplicated garbage i forgot how it does things anyway but too lazy to rewrite rn
+    # wait nvm its working
     fn_suffix = fn_suffix.rstrip("-")
 
     dbr_df, e621_df = pd.DataFrame(), pd.DataFrame()
