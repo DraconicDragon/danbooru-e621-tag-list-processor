@@ -1,13 +1,14 @@
 # region e621 processing
 
-from datetime import datetime
 import gzip
 import io
 import re
+from datetime import datetime
 from urllib.parse import urljoin
-from bs4 import BeautifulSoup
+
 import pandas as pd
 import requests
+from bs4 import BeautifulSoup
 
 from global_defaults import E621_BASE_URL
 from tag_lists.tag_list_utils import add_aliases
@@ -33,6 +34,7 @@ def process_e621_tags_csv(settings):
         return df
 
 
+# todo: cache the gz files maybe
 def process_e621_aliases_csv(settings):
     """filter by 'status' == 'user choice' | then remove 'status' + 'id' + 'created_at' columns"""
     latest_file_url = get_latest_e621_tags_file_url(E621_BASE_URL, alias_requested=True)
