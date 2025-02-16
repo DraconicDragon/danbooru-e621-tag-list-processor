@@ -1,5 +1,3 @@
-test
-
 ## Create and Format Danbooru and e621 Tags for AI Autocomplete Extensions
 
 This script scrapes tags from Danbooru and downloads e621 tags from the DB export index, formatting them for AI autocomplete extensions. It can generate separate or merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status.
