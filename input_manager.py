@@ -13,6 +13,7 @@ def get_input(prompt, default_value, cast_func=str):
         return default_value
 
 
+# todo: add option to remove contributors category (index 9?)
 def options():
     print("To use the default of any option, just press enter.")
 
@@ -90,7 +91,7 @@ def options():
     # else:
     #     wildcard_categories = DEFAULTS["wildcard_categories"]
     # endregion
-    
+
     # TODO: custom suffix?, custom filename?
 
     return {
