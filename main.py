@@ -31,7 +31,7 @@ def save_df_as_csv(df, filename_prefix, filename_suffix):
     print(f"CSV file has been saved as '{output_path}'")
 
 
-def save_krita_csv(df, is_e621_df):  # todo: implement
+def save_krita_csv(df, is_e621_df):
     output_folder = os.path.join(current_directory, "tag_lists_output", "krita_ai_compatible")
 
     # Create the folder if it doesn't exist, exist_ok=True prevent error if already exists
@@ -43,7 +43,7 @@ def save_krita_csv(df, is_e621_df):  # todo: implement
         output_path = os.path.join(output_folder, f"Danbooru NSFW.csv")
 
     df.to_csv(output_path, index=False, header=True)
-    print(f"CSV file has been saved as '{output_path}'")
+    print(f"Krita Compatible CSV file has been saved as '{output_path}'")
 
 
 def main():
@@ -91,6 +91,7 @@ def main():
             save_krita_csv(dbr_df, is_e621_df=False)
         if not e621_df.empty:
             save_krita_csv(e621_df, is_e621_df=True)
+
 
 if __name__ == "__main__":
     main()
