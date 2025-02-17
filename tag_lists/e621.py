@@ -31,6 +31,7 @@ def process_e621_tags_csv(settings):
         return add_aliases(df, alias_df)
 
     else:
+        df["aliases"] = ""
         return df
 
 

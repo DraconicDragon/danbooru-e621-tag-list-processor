@@ -23,8 +23,8 @@ def process_dbr_tags(settings):
         df2 = df2[["antecedent_name", "consequent_name"]]
 
         return add_aliases(df1, df2)
-
     else:
+        df1["aliases"] = ""
         return df1
 
 
