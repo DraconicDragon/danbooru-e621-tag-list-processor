@@ -32,6 +32,9 @@ def add_aliases(df1: pd.DataFrame, df2: pd.DataFrame):  # df1 is tags, df2 is al
 
 
 def merge_dbr_e6_tags(dbr_df, e621_df):
+    # prevent modification of original DataFrame
+    e621_df = e621_df.copy()
+
     # distinct categories for e621 for the merged df/csv (related: sd webui tagcomplete repo implementation of merged list)
     e621_df["category"] += 7
 
