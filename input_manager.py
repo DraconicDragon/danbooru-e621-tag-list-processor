@@ -64,7 +64,7 @@ def options():
         e6_incl_deleted_alias = "n"
 
     create_krita_csv = get_input(
-        "Do you want to create Krita AI compatible CSV files? (y/N)",
+        "(KRITA) Do you want to create Krita AI compatible CSV files? (y/N)",
         DEFAULTS["create_krita_csv"],
         str,
     ).lower()
