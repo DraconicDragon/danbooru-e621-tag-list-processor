@@ -35,7 +35,7 @@ The named programs and their extensions below are only the ones I have tested an
 - Run `python3 main.py` and fill out the options - after this the processing begins
 - You can also just spam enter to use the default values which will give you both Danbooru and e621 tag lists including active and deleted aliases and the merged list.
 
-The tag lists should be saved in the same directory as the script when it's done (to check you can just check the terminal output, it should print out the location of the saved files)
+The tag lists should be saved in a folder called tag_lists_output that will be created after the program successfully creates the CSV files (to check you can just check the terminal output, it should print out the location of the saved files)
 
 #### Method 2 (Requires GitHub account): GitHub actions
 
