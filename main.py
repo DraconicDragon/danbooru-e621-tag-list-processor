@@ -6,7 +6,7 @@ import pandas as pd
 from input_manager import options
 from tag_lists.danbooru import process_dbr_tags
 from tag_lists.e621 import process_e621_tags_csv
-from tag_lists.tag_list_utils import (
+from tag_lists.merge_utils import (
     merge_dbr_e6_tags,
     remove_useless_tags,
     sanitize_aliases_merged,

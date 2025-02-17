@@ -4,7 +4,7 @@ import pandas as pd
 import requests
 
 from global_defaults import DBR_ALIAS_URL, DBR_BASE_URL
-from tag_lists.tag_list_utils import add_aliases
+from tag_lists.merge_utils import add_aliases
 
 
 def process_dbr_tags(settings):
