@@ -1,4 +1,4 @@
-from global_defaults import DEFAULTS
+from defaults import DEFAULTS
 
 
 def get_input(prompt, default_value, cast_func=str):
