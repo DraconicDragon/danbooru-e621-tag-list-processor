@@ -37,6 +37,9 @@ def save_krita_csv(df, is_e621_df):
     # Create the folder if it doesn't exist, exist_ok=True prevent error if already exists
     os.makedirs(output_folder, exist_ok=True)
 
+    df.columns = ["tag", "type", "count", "aliases"]
+    df = df[(df["type"] != 6) & (df["type"] != 7) & (df["type"] != 8)]
+
     if is_e621_df:
         output_path = os.path.join(output_folder, f"e621 NSFW.csv")
     else:
@@ -60,13 +63,17 @@ def main():
             else ""
         )
     )
-    # todo: remove ep/ed/dd depending on which file; actually isnt this completely broken?
-    # overcomplicated garbage i forgot how it does things anyway but too lazy to rewrite rn
-    # wait nvm its working
     fn_suffix = fn_suffix.rstrip("-")
+
+    def adjust_suffix(original_suffix, parts_to_remove):
+        parts = original_suffix.split("-")
+        filtered = [part for part in parts if part not in parts_to_remove]
+        adjusted = "-".join(filtered)
+        return adjusted.rstrip("-")
 
     dbr_df, e621_df = pd.DataFrame(), pd.DataFrame()
 
+    # processing
     if settings["choice_site"] == 1:
         dbr_df = process_dbr_tags(settings)
     elif settings["choice_site"] == 2:
@@ -75,12 +82,17 @@ def main():
         dbr_df = process_dbr_tags(settings)
         e621_df = process_e621_tags_csv(settings)
 
+    # saving
     if not dbr_df.empty:
         dbr_df = remove_useless_tags(dbr_df)  # clean unneeded tags
+        dbr_suffix = adjust_suffix(fn_suffix, ["ep", "ed"])
         save_df_as_csv(dbr_df, filename_prefix="danbooru", filename_suffix=fn_suffix)
+
     if not e621_df.empty:
         e621_df = remove_useless_tags(e621_df)  # clean unneeded tags
+        e6_suffix = adjust_suffix(fn_suffix, ["dd"])
         save_df_as_csv(e621_df, filename_prefix="e621", filename_suffix=fn_suffix)
+
     if not dbr_df.empty and not e621_df.empty:
         merged_df = merge_dbr_e6_tags(dbr_df, e621_df)
         merged_df = sanitize_aliases_merged(merged_df)  # clean aliases so autocompletes dont reference wrong tags
