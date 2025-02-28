@@ -21,16 +21,19 @@ blacklisted_tags_file = os.path.join(
 # Load the CSV file into a DataFrame
 df = pd.read_csv(input_file)
 
-# Load the blacklisted tags from the JSON file
-with open(blacklisted_tags_file, "r") as f:
-    blacklisted_tags_data = json.load(f)
+def run():
+    # Load the blacklisted tags from the JSON file
+    with open(blacklisted_tags_file, "r") as f:
+        blacklisted_tags_data = json.load(f)
 
-# Combine all blacklisted tags from both categories into a single list
-blacklisted_tags = blacklisted_tags_data.get("dbr", []) + blacklisted_tags_data.get("e621", [])
+    # Combine all blacklisted tags from both categories into a single list
+    blacklisted_tags = blacklisted_tags_data.get("dbr", []) + blacklisted_tags_data.get("e621", [])
 
-# Filter out rows that contain blacklisted tags
-df = df[~df.iloc[:, 0].isin(blacklisted_tags)]
+    # Filter out rows that contain blacklisted tags
+    df = df[~df.iloc[:, 0].isin(blacklisted_tags)]
+    return df
 
+df = run()
 # Save the updated DataFrame to the output file
 df.to_csv(output_file, index=False)
 
