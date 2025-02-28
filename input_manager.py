@@ -26,6 +26,19 @@ def options():
         DEFAULTS["choice_site"],
         int,
     )
+
+    if choice_site == 3:
+        merged_post_count_type = get_input(
+            "Regarding the merged list, which type of post count should be used for tags? (1|2|3)\n"
+            + "(1) Danbooru\n"
+            + "(2) e621\n"
+            + "(3) Sum of both, the post count from both sites will be added together.",
+            DEFAULTS["merged_post_count_type"],
+            int,
+        )
+    else:
+        merged_post_count_type = DEFAULTS["merged_post_count_type"]
+
     min_post_thresh = get_input(
         "Enter min. number of posts for a tag to be kept (tags with fewer posts will be pruned)",
         DEFAULTS["min_post_thresh"],
@@ -107,6 +120,7 @@ def options():
 
     return {
         "choice_site": choice_site,
+        "merged_post_count_type": merged_post_count_type,
         "min_post_thresh": min_post_thresh,
         "incl_aliases": incl_aliases,
         "dbr_incl_deleted_alias": dbr_incl_deleted_alias,

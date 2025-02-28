@@ -94,7 +94,7 @@ def main():
         save_df_as_csv(e621_df, filename_prefix="e621", filename_suffix=e6_suffix)
 
     if not dbr_df.empty and not e621_df.empty:
-        merged_df = merge_dbr_e6_tags(dbr_df, e621_df)
+        merged_df = merge_dbr_e6_tags(dbr_df, e621_df, settings["merged_post_count_type"])
         merged_df = sanitize_aliases_merged(merged_df)  # clean aliases so autocompletes dont reference wrong tags
         save_df_as_csv(merged_df, filename_prefix="danbooru_e621_merged", filename_suffix=fn_suffix)
 

@@ -31,7 +31,7 @@ def add_aliases(df1: pd.DataFrame, df2: pd.DataFrame):  # df1 is tags, df2 is al
     return df1
 
 
-def merge_dbr_e6_tags(dbr_df, e621_df):
+def merge_dbr_e6_tags(dbr_df, e621_df, merged_post_count_type):
     # prevent modification of original DataFrame
     e621_df = e621_df.copy()
 
@@ -45,6 +45,16 @@ def merge_dbr_e6_tags(dbr_df, e621_df):
 
     merged_df = pd.concat([dbr_df, e621_df], ignore_index=True)
 
+    # Determine the aggregation function for post_count based on merged_post_count_type
+    if merged_post_count_type == 1:
+        post_count_agg = "first"  # Take the first value (from danbooru)
+    elif merged_post_count_type == 2:
+        post_count_agg = lambda x: x.iloc[1] if len(x) > 1 else x.iloc[0]  # Take the second value (from e621)
+    elif merged_post_count_type == 3:
+        post_count_agg = "sum"  # sum of both post counts (danbooru + e621)
+    else:
+        raise ValueError(f"Invalid merged_post_count_type. merged_post_count_type: {merged_post_count_type}")
+
     # merges both DFs and takes the first df's (danbooru) value if the same tag exists across two DFs to
     # prevent autocomplete from getting confused which tag to use
     ###
@@ -54,7 +64,7 @@ def merge_dbr_e6_tags(dbr_df, e621_df):
     result_df = merged_df.groupby("name", as_index=False).agg(
         {
             "category": "first",  # Take the first value (from danbooru)
-            "post_count": "first",  # Take the first value (from danbooru)
+            "post_count": post_count_agg,
             "aliases": lambda x: ",".join(
                 sorted(
                     set(

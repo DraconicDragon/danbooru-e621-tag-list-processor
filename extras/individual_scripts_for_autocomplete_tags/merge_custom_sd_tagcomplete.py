@@ -21,13 +21,24 @@ e6_df = pd.read_csv(e6_input_file, header=None)
 # Concatenate both DataFrames
 merged_df = pd.concat([dbr_df, e6_df], ignore_index=True)
 
+merged_post_count_type = int(input("Enter merged_post_count_type (1: Danbooru, 2: e621, 3: Sum of Both): "))
+# Determine the aggregation function for post_count based on merged_post_count_type
+if merged_post_count_type == 1:
+    post_count_agg = "first"  # Take the first value (from danbooru)
+elif merged_post_count_type == 2:
+    post_count_agg = lambda x: x.iloc[1] if len(x) > 1 else x.iloc[0]  # Take the second value (from e621)
+elif merged_post_count_type == 3:
+    post_count_agg = "sum"  # sum of both post counts (danbooru + e621)
+else:
+    raise ValueError(f"Invalid merged_post_count_type. merged_post_count_type: {merged_post_count_type}")
+
 # Group by the first column (index 0) and aggregate
 # Second and third columns (index 1 and 2) are taken from the first CSV (dbr_df)
 # Fourth column (index 3) is a concatenation of unique values from both
 result_df = merged_df.groupby(0, as_index=False).agg(
     {
         1: "first",  # Take the first value (from danbooru CSV)
-        2: "first",  # Take the first value (from danbooru CSV)
+        2: post_count_agg,  # Take the first value (from danbooru CSV)
         3: lambda x: ",".join(
             sorted(
                 set(
