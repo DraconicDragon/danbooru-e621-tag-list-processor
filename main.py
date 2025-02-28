@@ -89,12 +89,12 @@ def main():
     # saving
     if not dbr_df.empty:
         dbr_df = remove_useless_tags(dbr_df)  # clean unneeded tags
-        dbr_suffix = adjust_suffix(fn_suffix, ["ep", "ed"])
+        dbr_suffix = adjust_suffix(fn_suffix, ["ep", "ed", "dpc", "epc", "spc"])
         save_df_as_csv(dbr_df, filename_prefix="danbooru", filename_suffix=dbr_suffix)
 
     if not e621_df.empty:
         e621_df = remove_useless_tags(e621_df)  # clean unneeded tags
-        e6_suffix = adjust_suffix(fn_suffix, ["dd"])
+        e6_suffix = adjust_suffix(fn_suffix, ["dd", "dpc", "epc", "spc"])
         save_df_as_csv(e621_df, filename_prefix="e621", filename_suffix=e6_suffix)
 
     if not dbr_df.empty and not e621_df.empty:
