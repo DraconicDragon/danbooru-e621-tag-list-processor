@@ -6,6 +6,7 @@
         "english_commentary",
         "symbol-only_commentary",
         "banned_artist",
+        "poorly_translated",
         "bad_twitter_id",
         "bad_pixiv_id",
         "bad_id",
@@ -20,7 +21,6 @@
         "bad_cghub_id",
         "bad_google+_id",
         "bad_fandom_id",
-        "poorly_translated",
         "bad_newgrounds_id",
         "bad_blogspot_id",
         "bad_tinami_id",
@@ -40,7 +40,14 @@
         "bad_drawr_id",
         "bad_nicoseiga_id",
         "bad_deviantart_id",
-        "bad_tumblr_id"
+        "bad_tumblr_id",
+        "bad_youtube_id",
+        "bad_bilibili_id",
+        "bad_facebook_id",
+        "bad_artstreet_id",
+        "bad_bluesky_id",
+        "bad_dropbox_id",
+        "bad_reddit_id"
     ],
     "e621": [
         "conditional_dnp",
