@@ -62,6 +62,10 @@ def main():
             if settings["incl_aliases"] == "y"  # if is here
             else ""
         )
+        # merged post count type
+        + f"{'dpc-' if settings['merged_post_count_type'] == 1 else ''}"  # Danbooru
+        + f"{'epc-' if settings['merged_post_count_type'] == 2 else ''}"  # e621
+        + f"{'spc-' if settings['merged_post_count_type'] == 3 else ''}"  # Sum of Both
     )
     fn_suffix = fn_suffix.rstrip("-")
 
