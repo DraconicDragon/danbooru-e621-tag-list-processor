@@ -7,8 +7,8 @@ import pandas as pd
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-input_file = os.path.join(script_dir, "danbooru_e621_merged_tags_2024-12-22_pt2-ia-dd-ed.csv")
-output_file = os.path.join(script_dir, "danbooru_e621_merged_tags_2024-12-22_pt2-ia-dd-ed_refined-aliases.csv")
+input_file = os.path.join(script_dir, "danbooru_e621_merged_2025-02-16_pt25-ia-dd-ed_sum.csv")
+output_file = os.path.join(script_dir, "danbooru_e621_merged_2025-02-16_pt25-ia-dd-ed_sum_a.csv")
 
 
 def process_csv(input_file):
