@@ -4,7 +4,7 @@
 /tag_lists_ouput/*
 *.csv
 extras/per_gender_wildcards_scripts/
-
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
