@@ -1,7 +1,112 @@
 E621_BASE_URL = "https://e621.net/db_export/"  # come in csv format compressed in gz file
 
 DBR_BASE_URL = "https://danbooru.donmai.us/tags.json?limit=1000&search[hide_empty]=yes&search[is_deprecated]=no&search[order]=count"  # 1000 is upper limit
-DBR_ALIAS_URL = "https://danbooru.donmai.us/tag_aliases.json?commit=Search&limit=1000&search[order]=tag_count"  # 1000 is upper limit
+DBR_ALIAS_URL = "https://danbooru.donmai.us/tag_aliases.json?commit=Search&limit=1000&search[order]=tag_count"  # 1000
+DBR_IMPLICATIONS_URL = "https://danbooru.donmai.us/tag_implications.json?limit=1000&search[order]=tag_count"  # 1000
+DBR_POSTS_URL = "https://danbooru.donmai.us/posts.json?limit=200"  # 200 is upper limit
+DBR_ARTISTS_URL = "https://danbooru.donmai.us/artists.json?limit=1000&search[order]=post_count"  # 1000 is upper limit
+DBR_POOLS_URL = "https://danbooru.donmai.us/pools.json?limit=1000&search[order]=post_count"  # 1000 is upper limit
+DBR_COMMENTS_URL = "https://danbooru.donmai.us/comments.json?limit=1000&search[order]=post_id"  # 1000 is upper limit
+DBR_NOTES_URL = "https://danbooru.donmai.us/notes.json?limit=1000&search[order]=post_id"  # 1000 is upper limit
+DBR_WIKI_PAGES_URL = "https://danbooru.donmai.us/wiki_pages.json?limit=1000&search[order]=title"  # 1000 is upper limit
+DBR_USERS_URL = "https://danbooru.donmai.us/users.json?limit=1000&search[order]=name"  # 1000 is upper limit
+
+DBR_SCRAPE_TARGETS = {
+    1: {
+        "name": "Tags",
+        "url": DBR_BASE_URL,
+        "note": "(🟢|Suggested)",
+        "suggested": True,
+    },
+    2: {
+        "name": "Aliases",
+        "url": DBR_ALIAS_URL,
+        "note": "(🟢|Suggested)",
+        "suggested": True,
+    },
+    3: {
+        "name": "Implications",
+        "url": DBR_IMPLICATIONS_URL,
+        "note": "",
+        "suggested": True,
+    },
+    4: {
+        "name": "Posts",
+        "url": DBR_POSTS_URL,
+        "note": "(⚠️|Many/Takes very long)",
+        "suggested": True,
+    },
+    5: {
+        "name": "Artists",
+        "url": DBR_ARTISTS_URL,
+        "note": "",
+        "suggested": False,
+    },
+    6: {
+        "name": "Pools",
+        "url": DBR_POOLS_URL,
+        "note": "",
+        "suggested": False,
+    },
+    7: {
+        "name": "Comments",
+        "url": DBR_COMMENTS_URL,
+        "note": "",
+        "suggested": False,
+    },
+    8: {
+        "name": "Notes",
+        "url": DBR_NOTES_URL,
+        "note": "",
+        "suggested": False,
+    },
+    9: {
+        "name": "Wiki Pages",
+        "url": DBR_WIKI_PAGES_URL,
+        "note": "(API response is in an undesirable format/Not much use in that format)",
+        "suggested": False,
+    },
+    10: {
+        "name": "Users",
+        "url": DBR_USERS_URL,
+        "note": "",
+        "suggested": False,
+    },
+}
+
+E6_SCRAPE_TARGETS = {
+    1: {
+        "name": "Tags",
+        "note": "(🟢|Suggested)",
+        "suggested": True,
+    },
+    2: {
+        "name": "Aliases",
+        "note": "(🟢|Suggested)",
+        "suggested": True,
+    },
+    3: {
+        "name": "Implications",
+        "note": "",
+        "suggested": True,
+    },
+    4: {
+        "name": "Posts",
+        "note": "(⚠️|Many/Takes very long | 1.4gb as of 6th April 2025)",
+        "suggested": True,
+    },
+    5: {
+        "name": "Pools",
+        "note": "",
+        "suggested": False,
+    },
+    6: {
+        "name": "Wiki Pages",
+        "note": "(API response is in an undesirable format/Not much use in that format)",
+        "suggested": False,
+    },
+}
+
 
 DEFAULTS = {
     "choice_site": 3,

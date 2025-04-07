@@ -4,6 +4,7 @@ from datetime import datetime
 import pandas as pd
 
 from input_manager import options
+from raw_data_scrape.main_raw import do_thing
 from tag_lists.danbooru import process_dbr_tags
 from tag_lists.e621 import process_e621_tags_csv
 from tag_lists.merge_utils import (
@@ -51,6 +52,10 @@ def save_krita_csv(df, is_e621_df):
 
 def main():
     settings = options()
+
+    if settings["option_type"] == "raw":
+        do_thing(settings)
+        return
 
     fn_suffix = (
         f"pt{settings['min_post_thresh']}-"  # create file name suffix based on settings
