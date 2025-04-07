@@ -15,13 +15,13 @@ DBR_SCRAPE_TARGETS = {
     1: {
         "name": "Tags",
         "url": DBR_BASE_URL,
-        "note": "(🟢|Suggested)",
+        "note": "(🟢|Suggested; The normal mode can use this to create tag lists from (Not Implemented))",
         "suggested": True,
     },
     2: {
         "name": "Aliases",
         "url": DBR_ALIAS_URL,
-        "note": "(🟢|Suggested)",
+        "note": "(🟢|Suggested; The normal mode can use this to create tag lists from (Not Implemented))",
         "suggested": True,
     },
     3: {
@@ -33,7 +33,7 @@ DBR_SCRAPE_TARGETS = {
     4: {
         "name": "Posts",
         "url": DBR_POSTS_URL,
-        "note": "(⚠️|Many/Takes very long)",
+        "note": "(⚠️|Many/Takes long AND can't go beyond page 1000)",
         "suggested": True,
     },
     5: {
