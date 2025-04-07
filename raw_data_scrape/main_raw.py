@@ -18,7 +18,7 @@ def create_output_directory(site: str) -> str:
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
     date_str = datetime.now().strftime("%Y-%m-%d_%H-%M")
-    output_dir = os.path.join(base_dir, "..", "raw_output", site, date_str)
+    output_dir = os.path.join(base_dir, "..", "output", "raw", site, date_str)
     os.makedirs(output_dir, exist_ok=True)
     return output_dir
 

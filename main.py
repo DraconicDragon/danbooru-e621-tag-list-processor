@@ -21,7 +21,7 @@ current_date = datetime.now().strftime("%Y-%m-%d")
 
 
 def save_df_as_csv(df, filename_prefix, filename_suffix):
-    output_folder = os.path.join(current_directory, "tag_lists_output")
+    output_folder = os.path.join(current_directory, "output", "tag_lists")
 
     # Create the folder if it doesn't exist, exist_ok=True prevent error if already exists
     os.makedirs(output_folder, exist_ok=True)
@@ -33,7 +33,7 @@ def save_df_as_csv(df, filename_prefix, filename_suffix):
 
 
 def save_krita_csv(df, is_e621_df):
-    output_folder = os.path.join(current_directory, "tag_lists_output", "krita_ai_compatible")
+    output_folder = os.path.join(current_directory, "output", "tag_lists", "krita_ai_compatible")
 
     # Create the folder if it doesn't exist, exist_ok=True prevent error if already exists
     os.makedirs(output_folder, exist_ok=True)

@@ -1,11 +1,9 @@
 # repo-specific
-/tag-list/
 /lists
-/tag_lists_ouput/*
 *.csv
 extras/per_gender_wildcards_scripts/
 .vscode
-raw_output/*
+output/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
