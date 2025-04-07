@@ -7,13 +7,11 @@ import aiohttp
 
 from defaults import DBR_SCRAPE_TARGETS
 
-# todo: unified output folder
-
 
 def create_output_directory(site: str) -> str:
     """
-    Creates the output directory in ../raw/ with the current date (yearmonthdayhourminute)
-    and returns the full path.
+    Creates the output directory in ../output/raw/ with the current date (year-month-day_hour-minute) as a subdirectory.
+    The directory structure is: ../output/raw/<site>/<date>.
     """
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -104,8 +102,11 @@ async def main(settings: dict):
     Main async function. Opens one aiohttp session and processes each target
     specified in settings sequentially. For each target, pages are scraped
     concurrently in batches of 5, and the JSON data is merged and saved.
+    5 because 5 is a nice number. (actually is for ratelimits, initially)
     """
-
+    
+    # todo: check if ratelimits are hit and maybe slow down operation if needed 
+    
     async with aiohttp.ClientSession() as session:
         danbooru_output_dir = create_output_directory("danbooru")
         e621_output_dir = create_output_directory("e621")
