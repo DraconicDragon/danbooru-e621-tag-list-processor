@@ -25,6 +25,9 @@ The named programs and their extensions below are only the ones I have tested an
     - You will see a refresh and folder icon on the right side. Click the folder icon and it should take you to the tags folder where you have to replace the tag files with the ones you want to use.
     <sub>Note: For me personally on Windows, the tags folder was in `AppData\Roaming\krita\pykrita\ai_diffusion\tags` while the folder icon took me to `AppData\Roaming\krita\ai_diffusion\tags` </sub>
 
+- [SwarmUI](https://github.com/mcmonkeyprojects/SwarmUI)
+  - Please see here: https://github.com/mcmonkeyprojects/SwarmUI/blob/master/docs/Features/Autocompletions.md#word-lists 
+
 ~~The tag lists are automatically updated every 2 months by a GitHub actions workflow and saved in the tag-lists folder so even if I forget to update the tag lists manually, they will always be updated automatically.~~ yeah lol thats not working - will update at some point
 
 ## Running the Script Yourself
