@@ -9,9 +9,9 @@ An archive of CSV files I made can be found here: <https://github.com/DraconicDr
 
 The named programs and their extensions below are only the ones I have tested and used myself. The default tag lists will likely work with other autocomplete programs/extensions.
 
-- [A1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui)/[reForge](https://github.com/Panchovix/stable-diffusion-webui-reForge)/[Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge):
+- [A1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui)/[Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)/[reForge](https://github.com/Panchovix/stable-diffusion-webui-reForge):
   - Extension: [DominikDoom/a1111-sd-webui-tagcomplete](https://github.com/DominikDoom/a1111-sd-webui-tagcomplete)
-  - Location of the tag lists should be in `webui/extensions/a1111-sd-webui-tagcomplete/tags/`
+  - Location of the tag lists should be in `/webui/extensions/a1111-sd-webui-tagcomplete/tags/`
   - To select the file you want to use go to your WebUI's settings tab, search for "tag filename" or look for "Tag Autocomplete" in the left sidebar and click that to get the tagcomplete settings and then select the tag file from the "Tag filename" drop-down.
 
 - [ComfyUI](https://github.com/comfyanonymous/ComfyUI):
@@ -23,7 +23,7 @@ The named programs and their extensions below are only the ones I have tested an
 - [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion):
   - Go to Settings -> Interface -> Tag Auto-Completion
     - You will see a refresh and folder icon on the right side. Click the folder icon and it should take you to the tags folder where you have to replace the tag files with the ones you want to use.
-    <sub>Note: For me personally on Windows, the tags folder was in `AppData\Roaming\krita\pykrita\ai_diffusion\tags` while the folder icon took me to `AppData\Roaming\krita\ai_diffusion\tags` </sub>
+    <sub>Note: For me personally on Windows, the tags folder was in `%appdata%\krita\pykrita\ai_diffusion\tags` while the folder icon took me to `%appdata%\krita\ai_diffusion\tags` </sub>
 
 - [SwarmUI](https://github.com/mcmonkeyprojects/SwarmUI)
   - Please see here: https://github.com/mcmonkeyprojects/SwarmUI/blob/master/docs/Features/Autocompletions.md#word-lists 
