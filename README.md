@@ -1,3 +1,5 @@
+Hi welcome to the feat/raw-mode branch. This branch adds a feature so its possible to get and save the api responses as they are given by danbooru/e621 and save them as json (danbooru only). Currently only danbooru is supported, for E621 you can just go to <https://e621.net/db_export/> and download the files there
+
 ## Create Danbooru and e621 Tag Lists for AI related Autocomplete Extensions
 
 This script scrapes tags from the Danbooru API and downloads e621 tags from <https://e621.net/db_export/> and formatting them for AI autocomplete extensions. It can create separate and merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status as well as creating [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion) compatible tag lists (NSFW versions only).
