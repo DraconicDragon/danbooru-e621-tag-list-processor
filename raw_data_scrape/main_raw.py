@@ -6,16 +6,16 @@ from datetime import datetime
 import aiohttp
 
 from defaults import DBR_SCRAPE_TARGETS
+from tag_lists.e621 import get_latest_e621_tags_file_url
 
 
-def create_output_directory(site: str) -> str:
+def create_output_directory(date_str, site: str) -> str:
     """
     Creates the output directory in ../output/raw/ with the current date (year-month-day_hour-minute) as a subdirectory.
     The directory structure is: ../output/raw/<site>/<date>.
     """
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    date_str = datetime.now().strftime("%Y-%m-%d_%H-%M")
     output_dir = os.path.join(base_dir, "..", "output", "raw", site, date_str)
     os.makedirs(output_dir, exist_ok=True)
     return output_dir
@@ -104,15 +104,16 @@ async def main(settings: dict):
     concurrently in batches of 5, and the JSON data is merged and saved.
     5 because 5 is a nice number. (actually is for ratelimits, initially)
     """
-    
-    # todo: check if ratelimits are hit and maybe slow down operation if needed 
-    
+
+    # todo: check if ratelimits are hit and maybe slow down operation if needed
+
+    date = datetime.now().strftime("%Y-%m-%d_%H-%M")
+
     async with aiohttp.ClientSession() as session:
-        danbooru_output_dir = create_output_directory("danbooru")
-        e621_output_dir = create_output_directory("e621")
 
         # Process Danbooru targets first.
         for target_id in settings.get("dbr_scrape_selection", []):
+            danbooru_output_dir = create_output_directory(date, "danbooru")  # NOTE: maybe better possible, i forgot, too long ago
             target = DBR_SCRAPE_TARGETS.get(target_id)
             if target is None:
                 print(f"Target ID {target_id} not found in DBR_SCRAPE_TARGETS.")
@@ -120,8 +121,11 @@ async def main(settings: dict):
             await scrape_target(session, target, danbooru_output_dir)
 
         # Process additional targets (e.g., e621) if needed.
+        # todo: unfinished
         for target_id in settings.get("e6_scrape_selection", []):
+            e621_output_dir = create_output_directory(date, "e621")
             print(f"Processing e6 target {target_id}... (Not implemented)")
+            url = get_latest_e621_tags_file_url("https://e621.net/db_export/", alias_requested=False)
             # target = E621_SCRAPE_TARGETS.get(target_id)
             # if target is None:
             #     print(f"Target ID {target_id} not found in E621_SCRAPE_TARGETS.")
