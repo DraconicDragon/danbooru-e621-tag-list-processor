@@ -43,25 +43,28 @@ async def scrape_page(session, base_url, page, max_retries=3, backoff=3):
             async with session.get(page_url) as resp:
                 if resp.status == 410:
                     print(f"Page {page} returned 410 Gone — skipping retries.")
-                    return "GONE"
+                    return "GONE", 410
                 resp.raise_for_status()
                 data = await resp.json()
                 if attempt > 1:
                     print(f"Successfully retried page {page} on attempt {attempt}.")
-                return data
+                return data, resp.status
         except aiohttp.ClientResponseError as e:
             if e.status == 410:
                 print(f"Page {page} returned 410 Gone — skipping retries.")
-                return "GONE"
+                return "GONE", 410
             print(f"[Attempt {attempt}/{max_retries}] Error scraping page {page}: {e}")
+            last_status = e.status
         except Exception as e:
             print(f"[Attempt {attempt}/{max_retries}] Error scraping page {page}: {e}")
+            last_status = None
 
         if attempt < max_retries:
             await asyncio.sleep(backoff * attempt)
-        else:
-            print(f"Giving up on page {page} after {max_retries} attempts.")
-            return None
+
+    print(f"Giving up on page {page} after {max_retries} attempts.")
+    return None, last_status
+
 
 
 async def scrape_target(session, target: dict, output_dir: str):
@@ -81,9 +84,20 @@ async def scrape_target(session, target: dict, output_dir: str):
     while True:
         # Launch a batch of tasks (each task is one page)
         tasks = [scrape_page(session, url, page + i) for i in range(batch_size)]
-        results = await asyncio.gather(*tasks)
-        pages_processed = list(range(page, page + batch_size))
-        print(f"Target '{target_name}': Processed pages {pages_processed}")
+        raw_results = await asyncio.gather(*tasks)
+        results = []
+        pages_with_status = []
+
+        for i, (result, status) in enumerate(raw_results):
+            page_num = page + i
+            results.append(result)
+            if status and status != 200:
+                pages_with_status.append(f"{page_num}({status})")
+            else:
+                pages_with_status.append(f"{page_num}")
+
+        print(f"Target '{target_name}': Processed pages [{', '.join(pages_with_status)}]")
+
 
         # Check if the entire batch returned no content
         # NOTE: This check assumes that if all results are None or empty, AT LEAST 5 requests will be made unnecessarily
@@ -97,8 +111,8 @@ async def scrape_target(session, target: dict, output_dir: str):
             break
 
         # Append results in the order of pages processed
-        for result in results:
-            if result is not None and result:
+        for result, _ in raw_results:
+            if result is not None and result != "GONE":
                 if isinstance(result, list):
                     merged_data.extend(result)
                 else:
