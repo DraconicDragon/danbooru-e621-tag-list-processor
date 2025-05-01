@@ -1,7 +1,7 @@
 import asyncio
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 import aiohttp
 
@@ -107,13 +107,15 @@ async def main(settings: dict):
 
     # todo: check if ratelimits are hit and maybe slow down operation if needed
 
-    date = datetime.now().strftime("%Y-%m-%d_%H-%M")
+    date = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M")
 
     async with aiohttp.ClientSession() as session:
 
         # Process Danbooru targets first.
         for target_id in settings.get("dbr_scrape_selection", []):
-            danbooru_output_dir = create_output_directory(date, "danbooru")  # NOTE: maybe better possible, i forgot, too long ago
+            danbooru_output_dir = create_output_directory(
+                date, "danbooru"
+            )  # NOTE: maybe better possible, i forgot, too long ago
             target = DBR_SCRAPE_TARGETS.get(target_id)
             if target is None:
                 print(f"Target ID {target_id} not found in DBR_SCRAPE_TARGETS.")
