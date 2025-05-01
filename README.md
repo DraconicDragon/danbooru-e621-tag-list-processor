@@ -1,6 +1,6 @@
 ## Create Danbooru and e621 Tag Lists for AI related Autocomplete Extensions
 
-This script scrapes tags from the Danbooru API and downloads e621 tags from https://e621.net/db_export/ and formatting them for AI autocomplete extensions. It can create separate and merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status as well as creating [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion) compatible tag lists (NSFW versions only).
+This script scrapes tags from the Danbooru API and downloads e621 tags from https://e621.net/db_export/ and formatting them for AI autocomplete extensions. It can create separate and merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status as well as creating [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion) compatible tag lists (unfiltered/NSFW versions only).
 
 The CivitAI page for these can be found here: <https://civitai.com/models/950325>
 An archive of CSV files I made can be found here: <https://github.com/DraconicDragon/dbr-e621-lists-archive>
