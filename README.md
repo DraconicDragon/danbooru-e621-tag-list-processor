@@ -42,7 +42,7 @@ The named programs and their extensions below are only the ones I have tested an
 
 #### Method 1: Local
 
-- Install the dependencies first `pip install pandas requests beautifulsoup4` or from the txt file `pip install -r requirements.txt`
+- Install the dependencies first `pip install pandas requests beautifulsoup4 aiohttp` or from the txt file `pip install -r requirements.txt`
 - Run `python3 main.py` and fill out the options - after this the processing begins
 - You can also just spam enter to use the default values which will give you both Danbooru and e621 tag lists including active and deleted aliases and the merged list.
 
