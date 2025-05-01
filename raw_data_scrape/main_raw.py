@@ -7,7 +7,7 @@ import aiohttp
 import requests
 
 from defaults import DBR_SCRAPE_TARGETS, E6_SCRAPE_TARGETS, E621_BASE_URL
-from tag_lists.e621 import get_latest_e621_tags_file_url
+from tag_lists.e621 import get_latest_e621_tags_file_info
 
 
 def create_output_directory(date_str, site: str) -> str:
@@ -161,7 +161,8 @@ async def main(settings: dict):
                 print(f"Target ID {target_id} not found in E621_SCRAPE_TARGETS.")
                 continue
 
-            url = get_latest_e621_tags_file_url(E621_BASE_URL, target=target["name"].lower())
+            e621_latest_file_info = get_latest_e621_tags_file_info(E621_BASE_URL, target=target["name"].lower())
+            url = e621_latest_file_info["url"]
             try:
                 print(f"Downloading {target['name']} from {url}...")
                 response = requests.get(url)

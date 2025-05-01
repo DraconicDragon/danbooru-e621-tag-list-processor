@@ -17,8 +17,8 @@ from tag_lists.merge_utils import add_aliases
 def process_e621_tags_csv(settings):
     """remove 'id' and 'created_at' column, sort by 'post_count', and filter 'post_count' >= 50"""
 
-    latest_file_url = get_latest_e621_tags_file_url(E621_BASE_URL, target="tags")
-    unpacked_content = download_and_unpack_gz_memory(latest_file_url)
+    latest_file_info = get_latest_e621_tags_file_info(E621_BASE_URL, target="tags")
+    unpacked_content = download_and_unpack_gz_memory(latest_file_info["url"])
     df = pd.read_csv(io.StringIO(unpacked_content))
 
     df = df[["name", "category", "post_count"]]
@@ -38,8 +38,8 @@ def process_e621_tags_csv(settings):
 # todo: cache the gz files maybe
 def process_e621_aliases_csv(settings):
     """filter by 'status' == 'user choice' | then remove 'status' + 'id' + 'created_at' columns"""
-    latest_file_url = get_latest_e621_tags_file_url(E621_BASE_URL, target="tag_aliases")
-    unpacked_content = download_and_unpack_gz_memory(latest_file_url)
+    latest_file_info = get_latest_e621_tags_file_info(E621_BASE_URL, target="tag_aliases")
+    unpacked_content = download_and_unpack_gz_memory(latest_file_info["url"])
     df = pd.read_csv(io.StringIO(unpacked_content))
 
     if settings["e6_incl_deleted_alias"] == "n" and settings["e6_incl_pending_alias"] == "n":
@@ -60,15 +60,15 @@ def process_e621_aliases_csv(settings):
 # region fetch e6 gz tag files
 
 
-def get_latest_e621_tags_file_url(base_url, target: str):
+def get_latest_e621_tags_file_info(base_url, target: str):
     # Define the patterns for different target files
     target_patterns = {
-        "pools": r"pools-(\d{4}-\d{2}-\d{2})\.csv\.gz",
-        "posts": r"posts-(\d{4}-\d{2}-\d{2})\.csv\.gz",
-        "aliases": r"tag_aliases-(\d{4}-\d{2}-\d{2})\.csv\.gz",
-        "implications": r"tag_implications-(\d{4}-\d{2}-\d{2})\.csv\.gz",
-        "tags": r"tags-(\d{4}-\d{2}-\d{2})\.csv\.gz",
-        "wiki_pages": r"wiki_pages-(\d{4}-\d{2}-\d{2})\.csv\.gz",
+        "pools": r"(pools-(\d{4}-\d{2}-\d{2})\.csv\.gz)",
+        "posts": r"(posts-(\d{4}-\d{2}-\d{2})\.csv\.gz)",
+        "aliases": r"(tag_aliases-(\d{4}-\d{2}-\d{2})\.csv\.gz)",
+        "implications": r"(tag_implications-(\d{4}-\d{2}-\d{2})\.csv\.gz)",
+        "tags": r"(tags-(\d{4}-\d{2}-\d{2})\.csv\.gz)",
+        "wiki_pages": r"(wiki_pages-(\d{4}-\d{2}-\d{2})\.csv\.gz)",
     }
 
     if target not in target_patterns:
@@ -80,28 +80,39 @@ def get_latest_e621_tags_file_url(base_url, target: str):
 
     # Parse the page using BeautifulSoup
     soup = BeautifulSoup(response.text, "html.parser")
+    pre = soup.find("pre")
 
-    # Find all links that might contain the date in the filename
-    links = soup.find_all("a", href=True)
+    if not pre:
+        raise RuntimeError("Could not find <pre> block in HTML.")
 
-    # Compile the regex pattern for the specified target
-    date_pattern_str = target_patterns[target]
-    date_pattern = re.compile(date_pattern_str)
+    lines = pre.text.splitlines()
+    pattern = re.compile(target_patterns[target])
 
-    # Find the most recent date by extracting all matching dates
     latest_date = None
-    latest_url = None
-    for link in links:
-        match = date_pattern.search(link["href"])
+    latest_info = None
+
+    for line in lines:
+        match = pattern.search(line)
         if match:
-            file_date = datetime.strptime(match.group(1), "%Y-%m-%d")
+            filename = match.group(1)
+            date_str = match.group(2)
+
+            # Extract the time (e.g., "07:44") from the line using a second regex
+            time_match = re.search(r"\b(\d{2}:\d{2})\b", line)
+            file_time = time_match.group(1) if time_match else None
+
+            file_date = datetime.strptime(date_str, "%Y-%m-%d")
             if not latest_date or file_date > latest_date:
                 latest_date = file_date
-                latest_url = link["href"]
+                latest_info = {
+                    "url": urljoin(base_url, filename),
+                    "filename": filename,
+                    "date": date_str,
+                    "time": file_time,
+                }
 
-    # If a latest URL is found, construct the full download URL
-    if latest_url:
-        return urljoin(base_url, latest_url)
+    if latest_info:
+        return latest_info
     else:
         raise ValueError("No valid file found on the page.")
 
