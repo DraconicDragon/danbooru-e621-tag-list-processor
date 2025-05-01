@@ -4,8 +4,9 @@ import os
 from datetime import datetime, timezone
 
 import aiohttp
+import requests
 
-from defaults import DBR_SCRAPE_TARGETS
+from defaults import DBR_SCRAPE_TARGETS, E6_SCRAPE_TARGETS, E621_BASE_URL
 from tag_lists.e621 import get_latest_e621_tags_file_url
 
 
@@ -66,7 +67,6 @@ async def scrape_page(session, base_url, page, max_retries=3, backoff=3):
     return None, last_status
 
 
-
 async def scrape_target(session, target: dict, output_dir: str):
     """
     Processes one scraping target (a URL) in batches of 5 pages concurrently.
@@ -97,7 +97,6 @@ async def scrape_target(session, target: dict, output_dir: str):
                 pages_with_status.append(f"{page_num}")
 
         print(f"Target '{target_name}': Processed pages [{', '.join(pages_with_status)}]")
-
 
         # Check if the entire batch returned no content
         # NOTE: This check assumes that if all results are None or empty, AT LEAST 5 requests will be made unnecessarily
@@ -154,17 +153,34 @@ async def main(settings: dict):
                 continue
             await scrape_target(session, target, danbooru_output_dir)
 
-        # Process additional targets (e.g., e621) if needed.
-        # todo: unfinished
+        # Process e621 targets
         for target_id in settings.get("e6_scrape_selection", []):
             e621_output_dir = create_output_directory(date, "e621")
-            print(f"Processing e6 target {target_id}... (Not implemented)")
-            url = get_latest_e621_tags_file_url("https://e621.net/db_export/", alias_requested=False)
-            # target = E621_SCRAPE_TARGETS.get(target_id)
-            # if target is None:
-            #     print(f"Target ID {target_id} not found in E621_SCRAPE_TARGETS.")
-            #     continue
-            # await scrape_target(session, target, e621_output_dir)
+            target = E6_SCRAPE_TARGETS.get(target_id)
+            if target is None:
+                print(f"Target ID {target_id} not found in E621_SCRAPE_TARGETS.")
+                continue
+
+            url = get_latest_e621_tags_file_url(E621_BASE_URL, target=target["name"].lower())
+            try:
+                print(f"Downloading {target['name']} from {url}...")
+                response = requests.get(url)
+                response.raise_for_status()  # successful response insurance TM
+            except requests.exceptions.RequestException as e:
+                print(f"Failed to download data for target '{target['name']}': {e}")
+                continue  # Skip to the next target if this one fails
+
+            target_name = target["name"]
+            base_filename = get_base_filename(url)
+            output_file = os.path.join(e621_output_dir, base_filename)
+
+            try:
+                with open(output_file, "wb") as f:  # Open in binary write mode
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                print(f"Target '{target_name}': Data saved to {output_file}")
+            except Exception as e:
+                print(f"Failed to save data for target '{target_name}': {e}")
 
 
 def do_thing(settings: dict):
