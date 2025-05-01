@@ -1,0 +1,191 @@
+import asyncio
+import json
+import os
+from datetime import datetime, timezone
+
+import aiohttp
+import requests
+
+from defaults import DBR_SCRAPE_TARGETS, E6_SCRAPE_TARGETS, E621_BASE_URL
+from tag_lists.e621 import get_latest_e621_tags_file_url
+
+
+def create_output_directory(date_str, site: str) -> str:
+    """
+    Creates the output directory in ../output/raw/ with the current date (year-month-day_hour-minute) as a subdirectory.
+    The directory structure is: ../output/raw/<site>/<date>.
+    """
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    output_dir = os.path.join(base_dir, "..", "output", "raw", site, date_str)
+    os.makedirs(output_dir, exist_ok=True)
+    return output_dir
+
+
+def get_base_filename(url: str) -> str:
+    """
+    Extracts the base filename (e.g. "tags.json") from the URL.
+    """
+    filename = url.rsplit("/", 1)[-1].split("?")[0]
+    return filename
+
+
+async def scrape_page(session, base_url, page, max_retries=3, backoff=3):
+    """
+    Scrapes a single page by appending the page parameter to the URL.
+    """
+    if "?" in base_url:
+        page_url = f"{base_url}&page={page}"
+    else:
+        page_url = f"{base_url}?page={page}"
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            async with session.get(page_url) as resp:
+                if resp.status == 410:
+                    print(f"Page {page} returned 410 Gone — skipping retries.")
+                    return "GONE", 410
+                resp.raise_for_status()
+                data = await resp.json()
+                if attempt > 1:
+                    print(f"Successfully retried page {page} on attempt {attempt}.")
+                return data, resp.status
+        except aiohttp.ClientResponseError as e:
+            if e.status == 410:
+                print(f"Page {page} returned 410 Gone — skipping retries.")
+                return "GONE", 410
+            print(f"[Attempt {attempt}/{max_retries}] Error scraping page {page}: {e}")
+            last_status = e.status
+        except Exception as e:
+            print(f"[Attempt {attempt}/{max_retries}] Error scraping page {page}: {e}")
+            last_status = None
+
+        if attempt < max_retries:
+            await asyncio.sleep(backoff * attempt)
+
+    print(f"Giving up on page {page} after {max_retries} attempts.")
+    return None, last_status
+
+
+async def scrape_target(session, target: dict, output_dir: str):
+    """
+    Processes one scraping target (a URL) in batches of 5 pages concurrently.
+    Merges all pages' JSON data in the order they were scraped.
+    Saves the final merged JSON once no more content is found.
+    """
+    target_name = target["name"]
+    url = target["url"]
+    base_filename = get_base_filename(url)
+    page = 0  # starting page index
+    batch_size = 5
+    merged_data = []  # To accumulate data from each page
+
+    print(f"\nStarting scraping for target '{target_name}' ({url})")
+    while True:
+        # Launch a batch of tasks (each task is one page)
+        tasks = [scrape_page(session, url, page + i) for i in range(batch_size)]
+        raw_results = await asyncio.gather(*tasks)
+        results = []
+        pages_with_status = []
+
+        for i, (result, status) in enumerate(raw_results):
+            page_num = page + i
+            results.append(result)
+            if status and status != 200:
+                pages_with_status.append(f"{page_num}({status})")
+            else:
+                pages_with_status.append(f"{page_num}")
+
+        print(f"Target '{target_name}': Processed pages [{', '.join(pages_with_status)}]")
+
+        # Check if the entire batch returned no content
+        # NOTE: This check assumes that if all results are None or empty, AT LEAST 5 requests will be made unnecessarily
+        if all(
+            result in [None, "GONE"]
+            or (isinstance(result, list) and not result)
+            or (isinstance(result, dict) and not result)
+            for result in results
+        ):
+            print(f"Target '{target_name}': No more content found. Finishing scraping.")
+            break
+
+        # Append results in the order of pages processed
+        for result, _ in raw_results:
+            if result is not None and result != "GONE":
+                if isinstance(result, list):
+                    merged_data.extend(result)
+                else:
+                    merged_data.append(result)
+        page += batch_size
+
+    # After finishing, save the merged data to one JSON file.
+    output_file = os.path.join(output_dir, base_filename)
+    try:
+        with open(output_file, "w", encoding="utf-8") as f:
+            json.dump(merged_data, f, ensure_ascii=False, indent=2)
+        print(f"Target '{target_name}': Merged data saved to {output_file}")
+    except Exception as e:
+        print(f"Failed to save merged data for target '{target_name}': {e}")
+
+
+async def main(settings: dict):
+    """
+    Main async function. Opens one aiohttp session and processes each target
+    specified in settings sequentially. For each target, pages are scraped
+    concurrently in batches of 5, and the JSON data is merged and saved.
+    5 because 5 is a nice number. (actually is for ratelimits, initially)
+    """
+
+    # todo: check if ratelimits are hit and maybe slow down operation if needed
+
+    date = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M")
+
+    async with aiohttp.ClientSession() as session:
+
+        # Process Danbooru targets first.
+        for target_id in settings.get("dbr_scrape_selection", []):
+            danbooru_output_dir = create_output_directory(
+                date, "danbooru"
+            )  # NOTE: maybe better possible, i forgot, too long ago
+            target = DBR_SCRAPE_TARGETS.get(target_id)
+            if target is None:
+                print(f"Target ID {target_id} not found in DBR_SCRAPE_TARGETS.")
+                continue
+            await scrape_target(session, target, danbooru_output_dir)
+
+        # Process e621 targets
+        for target_id in settings.get("e6_scrape_selection", []):
+            e621_output_dir = create_output_directory(date, "e621")
+            target = E6_SCRAPE_TARGETS.get(target_id)
+            if target is None:
+                print(f"Target ID {target_id} not found in E621_SCRAPE_TARGETS.")
+                continue
+
+            url = get_latest_e621_tags_file_url(E621_BASE_URL, target=target["name"].lower())
+            try:
+                print(f"Downloading {target['name']} from {url}...")
+                response = requests.get(url)
+                response.raise_for_status()  # successful response insurance TM
+            except requests.exceptions.RequestException as e:
+                print(f"Failed to download data for target '{target['name']}': {e}")
+                continue  # Skip to the next target if this one fails
+
+            target_name = target["name"]
+            base_filename = get_base_filename(url)
+            output_file = os.path.join(e621_output_dir, base_filename)
+
+            try:
+                with open(output_file, "wb") as f:  # Open in binary write mode
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                print(f"Target '{target_name}': Data saved to {output_file}")
+            except Exception as e:
+                print(f"Failed to save data for target '{target_name}': {e}")
+
+
+def do_thing(settings: dict):
+    """
+    Entry point for the asynchronous scraping.
+    The settings dict defines which targets to scrape.
+    """
+    asyncio.run(main(settings))

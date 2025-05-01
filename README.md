@@ -1,6 +1,8 @@
+Hi welcome to the feat/raw-mode branch. This branch adds a feature so its possible to get and save the api responses as they are given by danbooru/e621 and save them as json (danbooru only). Currently only danbooru is supported, for E621 you can just go to <https://e621.net/db_export/> and download the files there
+
 ## Create Danbooru and e621 Tag Lists for AI related Autocomplete Extensions
 
-This script scrapes tags from the Danbooru API and downloads e621 tags from https://e621.net/db_export/ and formatting them for AI autocomplete extensions. It can create separate and merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status as well as creating [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion) compatible tag lists (unfiltered/NSFW versions only).
+This script scrapes tags from the Danbooru API and downloads e621 tags from <https://e621.net/db_export/> and formatting them for AI autocomplete extensions. It can create separate and merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status as well as creating [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion) compatible tag lists (unfiltered/NSFW versions only).
 
 The CivitAI page for these can be found here: <https://civitai.com/models/950325>
 An archive of CSV files I made can be found here: <https://github.com/DraconicDragon/dbr-e621-lists-archive>
@@ -46,7 +48,7 @@ The named programs and their extensions below are only the ones I have tested an
 - Run `python3 main.py` and fill out the options - after this the processing begins
 - You can also just spam enter to use the default values which will give you both Danbooru and e621 tag lists including active and deleted aliases and the merged list.
 
-The tag lists should be saved in a folder called tag_lists_output that will be created after the program successfully creates the CSV files (to check you can just check the terminal output, it should print out the location of the saved files)
+The tag lists should be saved in a folder called /output/tag_lists that will be created after the program successfully creates the CSV files (to check you can just check the terminal output, it should print out the location of the saved files)
 
 #### Method 2 (Requires GitHub account): GitHub actions
 

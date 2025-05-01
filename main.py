@@ -4,6 +4,7 @@ from datetime import datetime
 import pandas as pd
 
 from input_manager import options
+from raw_data_scrape.main_raw import do_thing
 from tag_lists.danbooru import process_dbr_tags
 from tag_lists.e621 import process_e621_tags_csv
 from tag_lists.merge_utils import (
@@ -20,7 +21,7 @@ current_date = datetime.now().strftime("%Y-%m-%d")
 
 
 def save_df_as_csv(df, filename_prefix, filename_suffix):
-    output_folder = os.path.join(current_directory, "tag_lists_output")
+    output_folder = os.path.join(current_directory, "output", "tag_lists")
 
     # Create the folder if it doesn't exist, exist_ok=True prevent error if already exists
     os.makedirs(output_folder, exist_ok=True)
@@ -32,7 +33,7 @@ def save_df_as_csv(df, filename_prefix, filename_suffix):
 
 
 def save_krita_csv(df, is_e621_df):
-    output_folder = os.path.join(current_directory, "tag_lists_output", "krita_ai_compatible")
+    output_folder = os.path.join(current_directory, "output", "tag_lists", "krita_ai_compatible")
 
     # Create the folder if it doesn't exist, exist_ok=True prevent error if already exists
     os.makedirs(output_folder, exist_ok=True)
@@ -51,6 +52,10 @@ def save_krita_csv(df, is_e621_df):
 
 def main():
     settings = options()
+
+    if settings["option_type"] == "raw":
+        do_thing(settings)
+        return
 
     fn_suffix = (
         f"pt{settings['min_post_thresh']}-"  # create file name suffix based on settings

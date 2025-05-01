@@ -17,7 +17,7 @@ from tag_lists.merge_utils import add_aliases
 def process_e621_tags_csv(settings):
     """remove 'id' and 'created_at' column, sort by 'post_count', and filter 'post_count' >= 50"""
 
-    latest_file_url = get_latest_e621_tags_file_url(E621_BASE_URL, alias_requested=False)
+    latest_file_url = get_latest_e621_tags_file_url(E621_BASE_URL, target="tags")
     unpacked_content = download_and_unpack_gz_memory(latest_file_url)
     df = pd.read_csv(io.StringIO(unpacked_content))
 
@@ -38,7 +38,7 @@ def process_e621_tags_csv(settings):
 # todo: cache the gz files maybe
 def process_e621_aliases_csv(settings):
     """filter by 'status' == 'user choice' | then remove 'status' + 'id' + 'created_at' columns"""
-    latest_file_url = get_latest_e621_tags_file_url(E621_BASE_URL, alias_requested=True)
+    latest_file_url = get_latest_e621_tags_file_url(E621_BASE_URL, target="tag_aliases")
     unpacked_content = download_and_unpack_gz_memory(latest_file_url)
     df = pd.read_csv(io.StringIO(unpacked_content))
 
@@ -60,7 +60,20 @@ def process_e621_aliases_csv(settings):
 # region fetch e6 gz tag files
 
 
-def get_latest_e621_tags_file_url(base_url, alias_requested: bool):
+def get_latest_e621_tags_file_url(base_url, target: str):
+    # Define the patterns for different target files
+    target_patterns = {
+        "pools": r"pools-(\d{4}-\d{2}-\d{2})\.csv\.gz",
+        "posts": r"posts-(\d{4}-\d{2}-\d{2})\.csv\.gz",
+        "aliases": r"tag_aliases-(\d{4}-\d{2}-\d{2})\.csv\.gz",
+        "implications": r"tag_implications-(\d{4}-\d{2}-\d{2})\.csv\.gz",
+        "tags": r"tags-(\d{4}-\d{2}-\d{2})\.csv\.gz",
+        "wiki_pages": r"wiki_pages-(\d{4}-\d{2}-\d{2})\.csv\.gz",
+    }
+
+    if target not in target_patterns:
+        raise ValueError(f'Invalid target specified: "{target}". Valid targets are: {list(target_patterns.keys())}')
+
     # Fetch the page content
     response = requests.get(base_url)
     response.raise_for_status()  # Ensure successful response
@@ -71,11 +84,9 @@ def get_latest_e621_tags_file_url(base_url, alias_requested: bool):
     # Find all links that might contain the date in the filename
     links = soup.find_all("a", href=True)
 
-    # Regex to find dates in the filename
-    if alias_requested:
-        date_pattern = re.compile(r"tag_aliases-(\d{4}-\d{2}-\d{2})\.csv\.gz")
-    else:
-        date_pattern = re.compile(r"tags-(\d{4}-\d{2}-\d{2})\.csv\.gz")
+    # Compile the regex pattern for the specified target
+    date_pattern_str = target_patterns[target]
+    date_pattern = re.compile(date_pattern_str)
 
     # Find the most recent date by extracting all matching dates
     latest_date = None
