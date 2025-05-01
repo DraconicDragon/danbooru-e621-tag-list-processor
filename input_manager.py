@@ -170,7 +170,7 @@ def options():
         merged_post_count_type = DEFAULTS["merged_post_count_type"]
 
     min_post_thresh = get_input(
-        "Enter min. number of posts for a tag to be kept (tags with fewer posts will be pruned)",
+        "Enter min. number of posts for a tag to be kept (tags with fewer posts will be ignored)",
         DEFAULTS["min_post_thresh"],
         int,
     )
