@@ -1,3 +1,8 @@
+i should've just read <https://github.com/Acly/krita-ai-diffusion/tree/main/ai_diffusion/tags> lol
+i thought the bigquery was inaccessible by plebs turns out, im just dumb, just had to link it to my own project aaaaaaaaa
+anyway, i dont really know SQL but i might switch to using the official bigquery dump so therell be a bigquery branch on this repo
+edit: i just tried it and AHHH this is so easy, not sure if i can do this over code without needing the user to make their own google bigquery project tho
+
 ## Create Danbooru and e621 Tag Lists for AI related Autocomplete Extensions
 
 This script scrapes tags from the Danbooru API and downloads e621 tags from <https://e621.net/db_export/> and formatting them for AI autocomplete extensions. It can create separate and merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status as well as creating [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion) compatible tag lists (unfiltered/NSFW versions only).
