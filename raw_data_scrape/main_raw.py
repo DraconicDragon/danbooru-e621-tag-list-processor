@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import re
 from datetime import datetime, timezone
 
 import aiohttp
@@ -10,11 +11,14 @@ from defaults import DBR_SCRAPE_TARGETS, E6_SCRAPE_TARGETS, E621_BASE_URL
 from tag_lists.e621 import get_latest_e621_tags_file_info
 
 
-def create_output_directory(date_str, site: str) -> str:
+def create_output_directory(date_str, site: str, override_time: str = None) -> str:
     """
     Creates the output directory in ../output/raw/ with the current date (year-month-day_hour-minute) as a subdirectory.
-    The directory structure is: ../output/raw/<site>/<date>.
+    If override_time is given, it replaces the time part (HH-MM) of the date_str.
     """
+    if override_time:
+        # Replace only the time portion
+        date_str = re.sub(r"(_\d{2}-\d{2})$", f"_{override_time}", date_str)
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
     output_dir = os.path.join(base_dir, "..", "output", "raw", site, date_str)
@@ -144,18 +148,17 @@ async def main(settings: dict):
 
         # Process Danbooru targets first.
         for target_id in settings.get("dbr_scrape_selection", []):
-            danbooru_output_dir = create_output_directory(
-                date, "danbooru"
-            )  # NOTE: maybe better possible, i forgot, too long ago
             target = DBR_SCRAPE_TARGETS.get(target_id)
             if target is None:
                 print(f"Target ID {target_id} not found in DBR_SCRAPE_TARGETS.")
                 continue
+
+            danbooru_output_dir = create_output_directory(date, "danbooru")
+
             await scrape_target(session, target, danbooru_output_dir)
 
         # Process e621 targets
         for target_id in settings.get("e6_scrape_selection", []):
-            e621_output_dir = create_output_directory(date, "e621")
             target = E6_SCRAPE_TARGETS.get(target_id)
             if target is None:
                 print(f"Target ID {target_id} not found in E621_SCRAPE_TARGETS.")
@@ -163,6 +166,8 @@ async def main(settings: dict):
 
             e621_latest_file_info = get_latest_e621_tags_file_info(E621_BASE_URL, target=target["name"].lower())
             url = e621_latest_file_info["url"]
+            e621_output_dir = create_output_directory(date, "e621", override_time=e621_latest_file_info["time"])
+
             try:
                 print(f"Downloading {target['name']} from {url}...")
                 response = requests.get(url)
