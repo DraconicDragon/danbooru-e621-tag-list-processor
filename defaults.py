@@ -92,7 +92,7 @@ E6_SCRAPE_TARGETS = {
     },
     4: {
         "name": "Posts",
-        "note": "(⚠️|Many/Takes very long | 1.4gb as of 6th April 2025)",
+        "note": "(⚠️|Many/Takes very long | 1.4gb (4.6gb uncompressed) as of 6th April 2025)",
         "suggested": True,
     },
     5: {
