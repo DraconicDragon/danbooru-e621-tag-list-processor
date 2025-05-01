@@ -1,5 +1,3 @@
-Hi welcome to the feat/raw-mode branch. This branch adds a feature so its possible to get and save the api responses as they are given by danbooru/e621 and save them as json (danbooru only). Currently only danbooru is supported, for E621 you can just go to <https://e621.net/db_export/> and download the files there
-
 ## Create Danbooru and e621 Tag Lists for AI related Autocomplete Extensions
 
 This script scrapes tags from the Danbooru API and downloads e621 tags from <https://e621.net/db_export/> and formatting them for AI autocomplete extensions. It can create separate and merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status as well as creating [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion) compatible tag lists (unfiltered/NSFW versions only).
@@ -7,7 +5,7 @@ This script scrapes tags from the Danbooru API and downloads e621 tags from <htt
 The CivitAI page for these can be found here: <https://civitai.com/models/950325>
 An archive of CSV files I made can be found here: <https://github.com/DraconicDragon/dbr-e621-lists-archive>
 
-#### Links for programs and their autocomplete extensions
+### Links for programs and their autocomplete extensions
 
 The named programs and their extensions below are only the ones I have tested and used myself. The default tag lists will likely work with other autocomplete programs/extensions.
 
@@ -24,7 +22,7 @@ The named programs and their extensions below are only the ones I have tested an
 
   - Custom Node 2: [jupo-ai/comfy-ex-tagcomplete](https://github.com/jupo-ai/comfy-ex-tagcomplete)
   - (instructions WIP)
- 
+
 - [SwarmUI](https://github.com/LykosAI/StabilityMatrix):
   - Please see: [Autocompletions.md#word-lists](https://github.com/mcmonkeyprojects/SwarmUI/blob/master/docs/Features/Autocompletions.md#word-lists)
 
@@ -36,13 +34,13 @@ The named programs and their extensions below are only the ones I have tested an
     <sub>Note: For me personally on Windows, the tags folder was in `%appdata%\krita\pykrita\ai_diffusion\tags` while the folder icon took me to `%appdata%\krita\ai_diffusion\tags` </sub>
 
 - [SwarmUI](https://github.com/mcmonkeyprojects/SwarmUI)
-  - Please see here: https://github.com/mcmonkeyprojects/SwarmUI/blob/master/docs/Features/Autocompletions.md#word-lists 
+  - Please see here: <https://github.com/mcmonkeyprojects/SwarmUI/blob/master/docs/Features/Autocompletions.md#word-lists>
 
 ~~The tag lists are automatically updated every 2 months by a GitHub actions workflow and saved in the tag-lists folder so even if I forget to update the tag lists manually, they will always be updated automatically.~~ yeah lol thats not working - will update at some point
 
 ## Running the Script Yourself
 
-#### Method 1: Local
+### Method 1: Local
 
 - Install the dependencies first `pip install pandas requests beautifulsoup4 aiohttp` or from the txt file `pip install -r requirements.txt`
 - Run `python3 main.py` and fill out the options - after this the processing begins
@@ -50,7 +48,7 @@ The named programs and their extensions below are only the ones I have tested an
 
 The tag lists should be saved in a folder called /output/tag_lists that will be created after the program successfully creates the CSV files (to check you can just check the terminal output, it should print out the location of the saved files)
 
-#### Method 2 (Requires GitHub account): GitHub actions
+### Method 2 (Requires GitHub account): GitHub actions
 
 - SOON:tm::tm:
 - Fork this repo
@@ -58,6 +56,10 @@ The tag lists should be saved in a folder called /output/tag_lists that will be 
 - Select the X on the left
 - Click X on the right and the workflow with optional custom settings
 - Wait for the workflow to finish and go to X and scroll down, you will be able to download the artifact there which should contain the output CSV file(s)
+
+#### Raw mode
+
+There is a "Raw mode" which will allow you to scrape the raw data without turning it into tag lists. Simply enter "raw" for the first question/selection and follow the instructions.
 
 Danbooru scraping part in the code was originally copied from here (many thank): <https://github.com/BetaDoggo/danbooru-tag-list>
 
