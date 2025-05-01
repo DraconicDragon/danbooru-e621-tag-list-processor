@@ -51,13 +51,13 @@ DBR_SCRAPE_TARGETS = {
     7: {
         "name": "Comments",
         "url": DBR_COMMENTS_URL,
-        "note": "",
+        "note": "(⚠️|More than 1000 pages)",
         "suggested": False,
     },
     8: {
         "name": "Notes",
         "url": DBR_NOTES_URL,
-        "note": "",
+        "note": "(⚠️|More than 1000 pages)",
         "suggested": False,
     },
     9: {
@@ -69,7 +69,7 @@ DBR_SCRAPE_TARGETS = {
     10: {
         "name": "Users",
         "url": DBR_USERS_URL,
-        "note": "",
+        "note": "(⚠️|lots of internal server errors for some reason, stops at page 150 too?)",
         "suggested": False,
     },
 }
