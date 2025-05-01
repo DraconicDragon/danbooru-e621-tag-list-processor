@@ -29,7 +29,7 @@ def get_base_filename(url: str) -> str:
     return filename
 
 
-async def scrape_page(session, base_url, page, max_retries=5, backoff=3):
+async def scrape_page(session, base_url, page, max_retries=3, backoff=3):
     """
     Scrapes a single page by appending the page parameter to the URL.
     """
@@ -41,18 +41,27 @@ async def scrape_page(session, base_url, page, max_retries=5, backoff=3):
     for attempt in range(1, max_retries + 1):
         try:
             async with session.get(page_url) as resp:
+                if resp.status == 410:
+                    print(f"Page {page} returned 410 Gone — skipping retries.")
+                    return "GONE"
                 resp.raise_for_status()
                 data = await resp.json()
                 if attempt > 1:
                     print(f"Successfully retried page {page} on attempt {attempt}.")
                 return data
+        except aiohttp.ClientResponseError as e:
+            if e.status == 410:
+                print(f"Page {page} returned 410 Gone — skipping retries.")
+                return "GONE"
+            print(f"[Attempt {attempt}/{max_retries}] Error scraping page {page}: {e}")
         except Exception as e:
             print(f"[Attempt {attempt}/{max_retries}] Error scraping page {page}: {e}")
-            if attempt < max_retries:
-                await asyncio.sleep(backoff * attempt)
-            else:
-                print(f"Giving up on page {page} after {max_retries} attempts.")
-                return None
+
+        if attempt < max_retries:
+            await asyncio.sleep(backoff * attempt)
+        else:
+            print(f"Giving up on page {page} after {max_retries} attempts.")
+            return None
 
 
 async def scrape_target(session, target: dict, output_dir: str):
@@ -79,7 +88,9 @@ async def scrape_target(session, target: dict, output_dir: str):
         # Check if the entire batch returned no content
         # NOTE: This check assumes that if all results are None or empty, AT LEAST 5 requests will be made unnecessarily
         if all(
-            result is None or (isinstance(result, list) and not result) or (isinstance(result, dict) and not result)
+            result in [None, "GONE"]
+            or (isinstance(result, list) and not result)
+            or (isinstance(result, dict) and not result)
             for result in results
         ):
             print(f"Target '{target_name}': No more content found. Finishing scraping.")
