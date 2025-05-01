@@ -29,7 +29,7 @@ def get_base_filename(url: str) -> str:
     return filename
 
 
-async def scrape_page(session, base_url: str, page: int):
+async def scrape_page(session, base_url, page, max_retries=5, backoff=3):
     """
     Scrapes a single page by appending the page parameter to the URL.
     """
@@ -38,14 +38,21 @@ async def scrape_page(session, base_url: str, page: int):
     else:
         page_url = f"{base_url}?page={page}"
 
-    try:
-        async with session.get(page_url) as response:
-            response.raise_for_status()
-            data = await response.json()
-            return data
-    except Exception as e:
-        print(f"Error scraping page {page} from {base_url}: {e}")
-        return None
+    for attempt in range(1, max_retries + 1):
+        try:
+            async with session.get(page_url) as resp:
+                resp.raise_for_status()
+                data = await resp.json()
+                if attempt > 1:
+                    print(f"Successfully retried page {page} on attempt {attempt}.")
+                return data
+        except Exception as e:
+            print(f"[Attempt {attempt}/{max_retries}] Error scraping page {page}: {e}")
+            if attempt < max_retries:
+                await asyncio.sleep(backoff * attempt)
+            else:
+                print(f"Giving up on page {page} after {max_retries} attempts.")
+                return None
 
 
 async def scrape_target(session, target: dict, output_dir: str):
