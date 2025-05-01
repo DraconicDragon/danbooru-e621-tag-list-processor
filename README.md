@@ -16,12 +16,14 @@ The named programs and their extensions below are only the ones I have tested an
 
 - [ComfyUI](https://github.com/comfyanonymous/ComfyUI):
   - Custom Node 1: [pythongosssss/ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts)
-  - ComfyUI Settings -> pysssss -> Manage custom words
-    - I recommend pasting the csv file content in the big textbox and saving it or using a link like [this one](https://raw.githubusercontent.com/DraconicDragon/dbr-e621-lists-archive/refs/heads/main/tag-lists/danbooru_e621_merged/danbooru_e621_merged_2024-12-22_pt25-ia-dd-ed_spc.csv) and load it. (gotten from [here](https://github.com/DraconicDragon/dbr-e621-lists-archive/blob/main/tag-lists/danbooru_e621_merged/danbooru_e621_merged_2024-12-22_pt25-ia-dd-ed_spc.csv) by pressing "Raw" button at top right)
-    - When you press save it might take a short bit and the "Saved!" appears only for less than a second. I'm unsure if you need to wait for it to show to be able to dismiss the window/popup.
+    - ComfyUI Settings -> pysssss -> Manage custom words
+      - I recommend pasting the CSV file content in the big textbox and saving it or using a link like [this one](https://raw.githubusercontent.com/DraconicDragon/dbr-e621-lists-archive/refs/heads/main/tag-lists/danbooru_e621_merged/danbooru_e621_merged_2024-12-22_pt25-ia-dd-ed_spc.csv) and load it. (gotten from [here](https://github.com/DraconicDragon/dbr-e621-lists-archive/blob/main/tag-lists/danbooru_e621_merged/danbooru_e621_merged_2024-12-22_pt25-ia-dd-ed_spc.csv) by pressing "Raw" button at top right)
+      - When you press save it might take a short bit and the "Saved!" appears only for less than a second. I'm unsure if you need to wait for it to show to be able to dismiss the window/popup.
 
   - Custom Node 2: [jupo-ai/comfy-ex-tagcomplete](https://github.com/jupo-ai/comfy-ex-tagcomplete)
-  - (instructions WIP)
+    - Seems like this extension already comes with tag lists that seems to be from the a1111-sd-tagcomplete extension, so you might not need to add any custom ones.
+    - To add custom CSV files: Drop the CSV file you want to use in the `ComfyUI\custom_nodes\comfy-ex-tagcomplete\tags`
+      - Refresh the ComfyUI tab if one is open, and then check ComfyUI Settings -> jupo -> tags file
 
 - [SwarmUI](https://github.com/LykosAI/StabilityMatrix):
   - Please see: [Autocompletions.md#word-lists](https://github.com/mcmonkeyprojects/SwarmUI/blob/master/docs/Features/Autocompletions.md#word-lists)
