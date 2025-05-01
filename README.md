@@ -1,7 +1,7 @@
 i should've just read <https://github.com/Acly/krita-ai-diffusion/tree/main/ai_diffusion/tags> lol
 i thought the bigquery was inaccessible by plebs turns out, im just dumb, just had to link it to my own project aaaaaaaaa
-anyway, i dont really know SQL but i might switch to using the official bigquery dump so therell be a bigquery branch on this repo
-edit: i just tried it and AHHH this is so easy, not sure if i can do this over code without needing the user to make their own google bigquery project tho
+if i can make code so that user doesnt need to make their own bigquery project/google account then maybe therell be a bigquery branch
+otherwise itll probably just make the raw data scrape mode of this project redundant
 
 ## Create Danbooru and e621 Tag Lists for AI related Autocomplete Extensions
 
