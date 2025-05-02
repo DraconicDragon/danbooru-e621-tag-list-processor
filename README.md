@@ -47,6 +47,8 @@ The named programs and their extensions below are only the ones I have tested an
 
 ## Running the Script Yourself
 
+**INFO**: Hi, if you are looking to run this script yourself, i'd appreciate if you could look over the finished danbooru CSV (or JSON data if you use raw mode) and see if it's correct. I've recently changed the csv creation code to use the scraping code from raw mode but haven't really done thorough tests with it. If you don't want to have any potential issues even though i don't think there should be any, the latest commit id before this change is `f53900da102150e08feae8ba552d170f8540e6dd`
+
 ### Method 1: Local
 
 - Install the dependencies first `pip install pandas requests beautifulsoup4 aiohttp` or from the txt file `pip install -r requirements.txt`
