@@ -11,7 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from defaults import E621_BASE_URL
-from tag_lists.merge_utils import add_aliases
+from modules.merge_utils import add_aliases
 
 
 def process_e621_tags_csv(settings):
@@ -100,7 +100,7 @@ def get_latest_e621_tags_file_info(base_url, target: str):
             # Extract the time (e.g., "07:44") from the line using a second regex
             time_match = re.search(r"\b(\d{2}:\d{2})\b", line)
             file_time = time_match.group(1) if time_match else None
-            file_time = file_time.replace(":", "-") # type:ignore
+            file_time = file_time.replace(":", "-")  # type:ignore
 
             file_date = datetime.strptime(date_str, "%Y-%m-%d")
             if not latest_date or file_date > latest_date:

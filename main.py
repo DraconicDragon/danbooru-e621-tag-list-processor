@@ -4,15 +4,14 @@ from datetime import datetime
 import pandas as pd
 
 from input_manager import options
-from raw_data_scrape.main_raw import do_thing
-from tag_lists.danbooru import process_dbr_tags
-from tag_lists.e621 import process_e621_tags_csv
-from tag_lists.merge_utils import (
+from modules.danbooru_scrape import process_dbr_tags
+from modules.e621_scrape import process_e621_tags_csv
+from modules.merge_utils import (
     merge_dbr_e6_tags,
     remove_useless_tags,
     sanitize_aliases_merged,
 )
-
+from raw_data_scrape.main_raw import do_thing
 
 # get the current directory of the script to save csvs in same dir
 current_directory = os.path.dirname(__file__)

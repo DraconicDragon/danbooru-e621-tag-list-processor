@@ -8,8 +8,8 @@ import aiohttp
 import requests
 
 from defaults import DBR_SCRAPE_TARGETS, E6_SCRAPE_TARGETS, E621_BASE_URL
-from tag_lists.danbooru import scrape_target
-from tag_lists.e621 import get_latest_e621_tags_file_info
+from modules.danbooru_scrape import scrape_target
+from modules.e621_scrape import get_latest_e621_tags_file_info
 
 
 def create_output_directory(date_str, site: str, override_time: str = None) -> str:

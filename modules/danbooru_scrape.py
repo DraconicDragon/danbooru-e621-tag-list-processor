@@ -4,7 +4,7 @@ import aiohttp
 import pandas as pd
 
 from defaults import DBR_SCRAPE_TARGETS
-from tag_lists.merge_utils import add_aliases
+from modules.merge_utils import add_aliases
 
 
 def convert_json_to_df(json_data):
