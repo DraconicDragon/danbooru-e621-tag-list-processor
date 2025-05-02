@@ -5,7 +5,7 @@ import pandas as pd
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 
-from tag_lists.merge_utils import merge_dbr_e6_tags, sanitize_aliases_merged
+from modules.merge_utils import merge_dbr_e6_tags, sanitize_aliases_merged
 
 # script for merging individual tag lists from danbooru and e621 after they've been created already but not merged
 # it uses the function from the main python files so it'll be aligned with the main tag merge methods if that changes
