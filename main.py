@@ -13,7 +13,6 @@ from tag_lists.merge_utils import (
     sanitize_aliases_merged,
 )
 
-# todo: move raw mode scraping logic to danbooru.py and replace existing, is faster and better
 
 # get the current directory of the script to save csvs in same dir
 current_directory = os.path.dirname(__file__)
