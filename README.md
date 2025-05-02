@@ -3,6 +3,8 @@ i thought the bigquery was inaccessible by plebs turns out, im just dumb, just h
 if i can make code so that user doesnt need to make their own bigquery project/google account then maybe therell be a bigquery branch
 otherwise itll probably just make the raw data scrape mode of this project redundant
 
+### note: the raw mode currently has an issue where everything is duplicated, oops.
+
 ## Create Danbooru and e621 Tag Lists for AI related Autocomplete Extensions
 
 This script scrapes tags from the Danbooru API and downloads e621 tags from <https://e621.net/db_export/> and formatting them for AI autocomplete extensions. It can create separate and merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status as well as creating [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion) compatible tag lists (unfiltered/NSFW versions only).
