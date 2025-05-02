@@ -8,6 +8,7 @@ import aiohttp
 import requests
 
 from defaults import DBR_SCRAPE_TARGETS, E6_SCRAPE_TARGETS, E621_BASE_URL
+from tag_lists.danbooru import scrape_target
 from tag_lists.e621 import get_latest_e621_tags_file_info
 
 
@@ -34,99 +35,13 @@ def get_base_filename(url: str) -> str:
     return filename
 
 
-async def scrape_page(session, base_url, page, max_retries=3, backoff=3):
-    """
-    Scrapes a single page by appending the page parameter to the URL.
-    """
-    if "?" in base_url:
-        page_url = f"{base_url}&page={page}"
-    else:
-        page_url = f"{base_url}?page={page}"
-
-    for attempt in range(1, max_retries + 1):
-        try:
-            async with session.get(page_url) as resp:
-                if resp.status == 410:
-                    print(f"Page {page} returned 410 Gone — skipping retries.")
-                    return "GONE", 410
-                resp.raise_for_status()
-                data = await resp.json()
-                if attempt > 1:
-                    print(f"Successfully retried page {page} on attempt {attempt}.")
-                return data, resp.status
-        except aiohttp.ClientResponseError as e:
-            if e.status == 410:
-                print(f"Page {page} returned 410 Gone — skipping retries.")
-                return "GONE", 410
-            print(f"[Attempt {attempt}/{max_retries}] Error scraping page {page}: {e}")
-            last_status = e.status
-        except Exception as e:
-            print(f"[Attempt {attempt}/{max_retries}] Error scraping page {page}: {e}")
-            last_status = None
-
-        if attempt < max_retries:
-            await asyncio.sleep(backoff * attempt)
-
-    print(f"Giving up on page {page} after {max_retries} attempts.")
-    return None, last_status
-
-
-async def scrape_target(session, target: dict, output_dir: str):
-    """
-    Processes one scraping target (a URL) in batches of 5 pages concurrently.
-    Merges all pages' JSON data in the order they were scraped.
-    Saves the final merged JSON once no more content is found.
-    """
-    target_name = target["name"]
-    url = target["url"]
-    base_filename = get_base_filename(url)
-    page = 1  # starting page
-    batch_size = 5
-    merged_data = []  # To accumulate data from each page
-
-    print(f"\nStarting scraping for target '{target_name}' ({url})")
-    while True:
-        # Launch a batch of tasks (each task is one page)
-        tasks = [scrape_page(session, url, page + i) for i in range(batch_size)]
-        raw_results = await asyncio.gather(*tasks)
-        results = []
-        pages_with_status = []
-
-        for i, (result, status) in enumerate(raw_results):
-            page_num = page + i
-            results.append(result)
-            if status and status != 200:
-                pages_with_status.append(f"{page_num}({status})")
-            else:
-                pages_with_status.append(f"{page_num}")
-
-        print(f"Target '{target_name}': Processed pages [{', '.join(pages_with_status)}]")
-
-        # Check if the entire batch returned no content
-        # NOTE: This check assumes that if all results are None or empty, AT LEAST 5 requests will be made unnecessarily
-        if all(
-            result in [None, "GONE"]
-            or (isinstance(result, list) and not result)
-            or (isinstance(result, dict) and not result)
-            for result in results
-        ):
-            print(f"Target '{target_name}': No more content found. Finishing scraping.")
-            break
-
-        # Append results in the order of pages processed
-        for result, _ in raw_results:
-            if result is not None and result != "GONE":
-                if isinstance(result, list):
-                    merged_data.extend(result)
-                else:
-                    merged_data.append(result)
-        page += batch_size
-
+def save_json(data, url, target_name, output_dir):
     # After finishing, save the merged data to one JSON file.
+    base_filename = get_base_filename(url)
     output_file = os.path.join(output_dir, base_filename)
     try:
         with open(output_file, "w", encoding="utf-8") as f:
-            json.dump(merged_data, f, ensure_ascii=False, indent=2)
+            json.dump(data, f, ensure_ascii=False, indent=2)
         print(f"Target '{target_name}': Merged data saved to {output_file}")
     except Exception as e:
         print(f"Failed to save merged data for target '{target_name}': {e}")
@@ -139,8 +54,6 @@ async def main(settings: dict):
     concurrently in batches of 5, and the JSON data is merged and saved.
     5 because 5 is a nice number. (actually is for ratelimits, initially)
     """
-
-    # todo: check if ratelimits are hit and maybe slow down operation if needed
 
     date = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M")
 
@@ -155,7 +68,10 @@ async def main(settings: dict):
 
             danbooru_output_dir = create_output_directory(date, "danbooru")
 
-            await scrape_target(session, target, danbooru_output_dir)
+            url = target["url"]
+            target_name = target["name"]
+            data = await scrape_target(session, url, target_name)
+            save_json(data, url, target_name, danbooru_output_dir)
 
         # Process e621 targets
         for target_id in settings.get("e6_scrape_selection", []):
