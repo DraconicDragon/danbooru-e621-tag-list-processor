@@ -80,7 +80,7 @@ async def scrape_target(session, target: dict, output_dir: str):
     target_name = target["name"]
     url = target["url"]
     base_filename = get_base_filename(url)
-    page = 0  # starting page index
+    page = 1  # starting page
     batch_size = 5
     merged_data = []  # To accumulate data from each page
 
