@@ -33,7 +33,7 @@ DBR_SCRAPE_TARGETS = {
     4: {
         "name": "Posts",
         "url": DBR_POSTS_URL,
-        "note": "(⚠️|Many/Takes long AND can't go beyond page 1000 (does NOT contain any image files, only URL); please see actual dumps for full data, possibly deepghs' dataset on Huggingface has it)",
+        "note": "(⚠️|Many/Takes long AND can't go beyond page 1000 (does NOT contain any image files, only post metadata); please see actual dumps for full data, possibly deepghs' dataset on Huggingface has it)",
         "suggested": True,
     },
     5: {
