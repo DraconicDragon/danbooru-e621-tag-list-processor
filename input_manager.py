@@ -158,6 +158,22 @@ def options():
         return raw_options()
 
     if choice_site == 3:
+        merge_method = get_input(
+            "Regarding the merged list, which merging method do you want to use? (1|2|3)\n"
+            + "(1) Old method - Simply increases each category number from e621 csv by 7.\n"
+            + (
+                "(2) New method - more future proof but current autocomplete programs don't support this as of 6th June 2025" 
+                "- creates Separate column for 'services'; E.g.: the merged CSV will end up with an added column " 
+                "which will have a string of comma-separated names of the 'services' the tag belongs to/shows up in like " 
+                "tag_n,category_id,post_count,\"alias_1,alias_2\",\"danbooru,e621\" or just ...,\"danbooru\"\n"
+            ),
+            DEFAULTS["merge_method"],
+            int,
+        )
+    else:
+        merge_method = DEFAULTS["merge_method"]
+
+    if choice_site == 3:
         merged_post_count_type = get_input(
             "Regarding the merged list, which type of post count should be used for tags? (1|2|3)\n"
             + "(1) Danbooru\n"
@@ -250,6 +266,7 @@ def options():
     return {
         "option_type": "normal",
         "choice_site": choice_site,
+        "merge_method": merge_method,
         "merged_post_count_type": merged_post_count_type,
         "min_post_thresh": min_post_thresh,
         "incl_aliases": incl_aliases,
