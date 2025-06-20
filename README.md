@@ -1,14 +1,24 @@
-i should've just read <https://github.com/Acly/krita-ai-diffusion/tree/main/ai_diffusion/tags> lol
-i thought the bigquery was inaccessible by plebs turns out, im just dumb, just had to link it to my own project aaaaaaaaa
-if i can make code so that user doesnt need to make their own bigquery project/google account then maybe therell be a bigquery branch
-otherwise itll probably just make the raw data scrape mode of this project redundant
-
 ## Create Danbooru and e621 Tag Lists for AI related Autocomplete Extensions
 
 This script scrapes tags from the Danbooru API and downloads e621 tags from <https://e621.net/db_export/> and formatting them for AI autocomplete extensions. It can create separate and merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status as well as creating [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion) compatible tag lists (unfiltered/NSFW versions only).
 
 The CivitAI page for these can be found here: <https://civitai.com/models/950325>
 An archive of CSV files I made can be found here: <https://github.com/DraconicDragon/dbr-e621-lists-archive>
+
+### Preamble
+
+<details><summary>Preamble notes, might be unimportant</summary>
+If you dont want to scrape danbooru's API using this script and know your way around Google BigQuery, there's an official danbooru dump [here](https://console.cloud.google.com/bigquery?project=danbooru1&pli=1) where you can easily do SQL queries. Krita-AI-diffusion has a guide-ish file [here](https://github.com/Acly/krita-ai-diffusion/tree/main/ai_diffusion/tags) that explains some stuff, maybe it helps</details>
+
+### If you are a developer
+
+... looking to use these in some way, please don't rely on the merged list - it is not very future proof or scalable. Instead I recommend and hope that you will implement a way to load multiple CSV files in your project. The merging method used by my script came to existence purely because of convenience - it worked with existing autocomplete extensions with no or only minor issues (which didnt impact functionality) and did not require third parties to write extra code for it.
+
+<details><summary>Extra notes about how bad the current merging method is</summary>
+The current merging method simply increases E621's category count by 7, which is in danboru's invalid region (above 5/6), so they don't collide with each other. This is not future proof because if danbooru decides to add 2-3 more categories, they will collide - updating the merged list would then require an update to the autocomplete extensions using the merged list. The same thing is about scalability - If there is a new service that also has a similar structure/tags (maybe gelbooru <sub><sub>gelbooru's api responses are garbaw, but i havent dug further into it</sub></sub>, rule34 or bbooru?) then how would that be added to the merged list? Yes categories can just be increased again, but this is all hardcoded and shouldn't be. I did think of a way like adding a "service" column that has a string like "danbooru,e621" or just "danbooru" and "e621" (depending on tag, more robust if category numbers are different and same numbers mean different things) but at that point writing the code to support this would be just as much as supporting multiple files loaded (probably not but im also kind of trying to convince whichever dev might be reading this). And also at that point having a single file to load for tags the user probably doesnt want anyway might be suboptimal either way.
+  
+TLDR: Just don't write your code around the merged list and in best case support loading multiple CSV files.
+</details>
 
 ### Links for programs and their autocomplete extensions
 
@@ -76,3 +86,9 @@ im bad at repo names
 
 <sub>personal note regarding pandas because im too lazy to actually read it: dbr_e6_tag_processor.py:175: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
   tag_df = pd.concat([tag_df, pd.DataFrame(data)], ignore_index=True)</sub>
+
+notes for myself:
+i should've just read <https://github.com/Acly/krita-ai-diffusion/tree/main/ai_diffusion/tags> lol
+i thought the bigquery was inaccessible by plebs turns out, im just dumb, just had to link it to my own project aaaaaaaaa
+if i can make code so that user doesnt need to make their own bigquery project/google account then maybe therell be a bigquery branch
+otherwise itll probably just make the raw data scrape mode of this project redundant
