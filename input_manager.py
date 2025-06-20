@@ -120,7 +120,7 @@ def raw_options():
             )
             # Check if any selected number is higher than the maximum key in DBR_SCRAPE_TARGETS
             max_key = max(E6_SCRAPE_TARGETS.keys())
-            invalid_numbers = [num for num in dbr_scrape_selection if num > max_key]
+            invalid_numbers = [num for num in dbr_scrape_selection if num > max_key] # type: ignore
 
             if invalid_numbers:
                 print(f"Invalid selection: {invalid_numbers}. Please choose numbers up to {max_key}.")
