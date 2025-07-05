@@ -38,7 +38,7 @@ def process_e621_tags_csv(settings):
 # todo: cache the gz files maybe
 def process_e621_aliases_csv(settings):
     """filter by 'status' == 'user choice' | then remove 'status' + 'id' + 'created_at' columns"""
-    latest_file_info = get_latest_e621_tags_file_info(E621_BASE_URL, target="tag_aliases")
+    latest_file_info = get_latest_e621_tags_file_info(E621_BASE_URL, target="aliases")
     unpacked_content = download_and_unpack_gz_memory(latest_file_info["url"])
     df = pd.read_csv(io.StringIO(unpacked_content))
 
@@ -100,7 +100,7 @@ def get_latest_e621_tags_file_info(base_url, target: str):
             # Extract the time (e.g., "07:44") from the line using a second regex
             time_match = re.search(r"\b(\d{2}:\d{2})\b", line)
             file_time = time_match.group(1) if time_match else None
-            file_time = file_time.replace(":", "-") # type:ignore
+            file_time = file_time.replace(":", "-")  # type:ignore
 
             file_date = datetime.strptime(date_str, "%Y-%m-%d")
             if not latest_date or file_date > latest_date:
