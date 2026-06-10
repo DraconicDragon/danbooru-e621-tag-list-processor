@@ -149,7 +149,7 @@ def options():
         + "(1) Danbooru\n"
         + "(2) e621\n"
         + "(3) Both, Creates a separate list for each site + a merged list\n"
-        + "(4) Gelbooru (Standalone, skips merged list/krita list)",
+        + "(4) Gelbooru (DON'T USE, takes ages, use pre-made one if you don't want to wait 1 hour+ | skips merged list/krita list)",
         DEFAULTS["choice_site"],
         int,
     )
