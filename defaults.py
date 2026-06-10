@@ -107,6 +107,7 @@ E6_SCRAPE_TARGETS = {
     },
 }
 
+GELBOORU_BASE_URL = "https://gelbooru.com/index.php"
 
 DEFAULTS = {
     "choice_site": 3,

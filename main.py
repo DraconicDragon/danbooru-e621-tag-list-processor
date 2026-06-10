@@ -7,12 +7,12 @@ from input_manager import options
 from raw_data_scrape.main_raw import do_thing
 from tag_lists.danbooru import process_dbr_tags
 from tag_lists.e621 import process_e621_tags_csv
+from tag_lists.gelbooru import process_gb_tags
 from tag_lists.merge_utils import (
     merge_dbr_e6_tags,
     remove_useless_tags,
     sanitize_aliases_merged,
 )
-
 
 # get the current directory of the script to save csvs in same dir
 current_directory = os.path.dirname(__file__)
@@ -81,7 +81,7 @@ def main():
         adjusted = "-".join(filtered)
         return adjusted.rstrip("-")
 
-    dbr_df, e621_df = pd.DataFrame(), pd.DataFrame()
+    dbr_df, e621_df, gelbooru_df = pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
 
     # processing
     if settings["choice_site"] == 1:
@@ -91,21 +91,30 @@ def main():
     elif settings["choice_site"] == 3:
         dbr_df = process_dbr_tags(settings)
         e621_df = process_e621_tags_csv(settings)
+    elif settings["choice_site"] == 4:
+        gelbooru_df = process_gb_tags(settings)
 
-    # saving
+    # saving DBR
     if not dbr_df.empty:
-        dbr_df = remove_useless_tags(dbr_df)  # clean unneeded tags
+        dbr_df = remove_useless_tags(dbr_df)
         dbr_suffix = adjust_suffix(fn_suffix, ["ep", "ed", "dpc", "epc", "spc"])
         save_df_as_csv(dbr_df, filename_prefix="danbooru", filename_suffix=dbr_suffix)
 
+    # saving E621
     if not e621_df.empty:
-        e621_df = remove_useless_tags(e621_df)  # clean unneeded tags
+        e621_df = remove_useless_tags(e621_df)
         e6_suffix = adjust_suffix(fn_suffix, ["dd", "dpc", "epc", "spc"])
         save_df_as_csv(e621_df, filename_prefix="e621", filename_suffix=e6_suffix)
 
+    if not gelbooru_df.empty:
+        gelbooru_df = remove_useless_tags(gelbooru_df)
+        gb_suffix = adjust_suffix(fn_suffix, ["ia", "dd", "ep", "ed", "dpc", "epc", "spc"])
+        save_df_as_csv(gelbooru_df, filename_prefix="gelbooru", filename_suffix=gb_suffix)
+
+    # do not use gelbooru for merged list or krita
     if not dbr_df.empty and not e621_df.empty:
         merged_df = merge_dbr_e6_tags(dbr_df, e621_df, settings["merged_post_count_type"])
-        merged_df = sanitize_aliases_merged(merged_df)  # clean aliases so autocompletes dont reference wrong tags
+        merged_df = sanitize_aliases_merged(merged_df)
         save_df_as_csv(merged_df, filename_prefix="danbooru_e621_merged", filename_suffix=fn_suffix)
 
     if settings["create_krita_csv"] == "y":

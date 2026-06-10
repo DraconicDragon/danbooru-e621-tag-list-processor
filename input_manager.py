@@ -92,7 +92,7 @@ def raw_options():
             )
             # Check if any selected number is higher than the maximum key in DBR_SCRAPE_TARGETS
             max_key = max(DBR_SCRAPE_TARGETS.keys())
-            invalid_numbers = [num for num in dbr_scrape_selection if num > max_key] # type: ignore
+            invalid_numbers = [num for num in dbr_scrape_selection if num > max_key]
 
             if invalid_numbers:
                 print(f"Invalid selection: {invalid_numbers}. Please choose numbers up to {max_key}.")
@@ -120,7 +120,7 @@ def raw_options():
             )
             # Check if any selected number is higher than the maximum key in DBR_SCRAPE_TARGETS
             max_key = max(E6_SCRAPE_TARGETS.keys())
-            invalid_numbers = [num for num in dbr_scrape_selection if num > max_key] # type: ignore
+            invalid_numbers = [num for num in dbr_scrape_selection if num > max_key]
 
             if invalid_numbers:
                 print(f"Invalid selection: {invalid_numbers}. Please choose numbers up to {max_key}.")
@@ -145,10 +145,11 @@ def options():
 
     # region tag options
     choice_site = get_input(
-        "Which site do you want to create a tag list from? (1|2|3)\n"
+        "Which site do you want to create a tag list from? (1|2|3|4)\n"
         + "(1) Danbooru\n"
         + "(2) e621\n"
-        + "(3) Both, Creates a separate list for each site + a merged list",
+        + "(3) Both, Creates a separate list for each site + a merged list\n"
+        + "(4) Gelbooru (Standalone, skips merged list/krita list)",
         DEFAULTS["choice_site"],
         int,
     )
@@ -157,6 +158,7 @@ def options():
     if choice_site == "raw":
         return raw_options()
 
+    # Gelbooru skips all merged post settings
     if choice_site == 3:
         merged_post_count_type = get_input(
             "Regarding the merged list, which type of post count should be used for tags? (1|2|3)\n"
@@ -174,43 +176,52 @@ def options():
         DEFAULTS["min_post_thresh"],
         int,
     )
-    incl_aliases = get_input(
-        "Do you want to include alias tags? (y/N)",
-        DEFAULTS["incl_aliases"],
-        str,
-    )
 
-    if incl_aliases == "y":
-        # Site-specific options
-        # deleted aliases are tags that are no longer in use by the site but might be useful for autocomplete
-        dbr_incl_deleted_alias = DEFAULTS["dbr_incl_deleted_alias"]
-        e6_incl_pending_alias = DEFAULTS["e6_incl_pending_alias"]
-        e6_incl_deleted_alias = DEFAULTS["e6_incl_deleted_alias"]
-
-        if choice_site in (1, 3):
-            dbr_incl_deleted_alias = get_input(
-                "(DBR) Do you want to include alias tags that aren't in use by Danbooru anymore (deleted aliases)? (y/N)",
-                DEFAULTS["dbr_incl_deleted_alias"],
-            )
-
-        if choice_site in (2, 3):
-            e6_incl_pending_alias = get_input(
-                "(E621) Do you want to include 'pending' alias tags? (y/N)", DEFAULTS["e6_incl_pending_alias"]
-            )
-            e6_incl_deleted_alias = get_input(
-                "(E621) Do you want to include alias tags that aren't in use by e621 anymore (deleted aliases)? (y/N)",
-                DEFAULTS["e6_incl_deleted_alias"],
-            )
-    else:
+    # Gelbooru does not have aliases, so we can skip asking about them if choice_site is 4
+    if choice_site == 4:
+        incl_aliases = "n"
         dbr_incl_deleted_alias = "n"
         e6_incl_pending_alias = "n"
         e6_incl_deleted_alias = "n"
+        create_krita_csv = "n"
+    else:
+        incl_aliases = get_input(
+            "Do you want to include alias tags? (y/N)",
+            DEFAULTS["incl_aliases"],
+            str,
+        )
 
-    create_krita_csv = get_input(
-        "(KRITA) Do you want to create Krita AI compatible CSV files? (y/N)",
-        DEFAULTS["create_krita_csv"],
-        str,
-    )
+        if incl_aliases == "y":
+        # Site-specific options
+        # deleted aliases are tags that are no longer in use by the site but might be useful for autocomplete
+            dbr_incl_deleted_alias = DEFAULTS["dbr_incl_deleted_alias"]
+            e6_incl_pending_alias = DEFAULTS["e6_incl_pending_alias"]
+            e6_incl_deleted_alias = DEFAULTS["e6_incl_deleted_alias"]
+
+            if choice_site in (1, 3):
+                dbr_incl_deleted_alias = get_input(
+                    "(DBR) Do you want to include alias tags that aren't in use by Danbooru anymore (deleted aliases)? (y/N)",
+                    DEFAULTS["dbr_incl_deleted_alias"],
+                )
+
+            if choice_site in (2, 3):
+                e6_incl_pending_alias = get_input(
+                    "(E621) Do you want to include 'pending' alias tags? (y/N)", DEFAULTS["e6_incl_pending_alias"]
+                )
+                e6_incl_deleted_alias = get_input(
+                    "(E621) Do you want to include alias tags that aren't in use by e621 anymore (deleted aliases)? (y/N)",
+                    DEFAULTS["e6_incl_deleted_alias"],
+                )
+        else:
+            dbr_incl_deleted_alias = "n"
+            e6_incl_pending_alias = "n"
+            e6_incl_deleted_alias = "n"
+
+        create_krita_csv = get_input(
+            "(KRITA) Do you want to create Krita AI compatible CSV files? (y/N)",
+            DEFAULTS["create_krita_csv"],
+            str,
+        )
 
     # endregion
 
