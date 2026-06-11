@@ -1,4 +1,5 @@
-E621_BASE_URL = "https://e621.net/db_export/"  # come in csv format compressed in gz file
+E621_BASE_URL = "https://e621.net/db_exports.json"  # come in csv format compressed in gz file
+E621_HEADERS = {"User-Agent": "danbooru-e621-tag-list-processor/1.0"}
 
 DBR_BASE_URL = "https://danbooru.donmai.us/tags.json?limit=1000&search[hide_empty]=yes&search[is_deprecated]=no&search[order]=count"  # 1000 is upper limit
 DBR_ALIAS_URL = "https://danbooru.donmai.us/tag_aliases.json?commit=Search&limit=1000&search[order]=tag_count"  # 1000
