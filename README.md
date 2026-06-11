@@ -5,9 +5,14 @@ This script scrapes tags from the Danbooru API and downloads e621 tags from <htt
 The CivitAI page for these can be found here: <https://civitai.com/models/950325>
 An archive of CSV files I made can be found here: <https://github.com/DraconicDragon/dbr-e621-lists-archive>
 
-### Preamble
+The tag lists are automatically created (as GH actions artifacts) every month in the archive repo, and saved every 3 months in the tag-lists folder.
 
-<details><summary>Preamble notes, might be unimportant</summary>
+> **Note on Gelbooru option**: The script also supports scraping from Gelbooru. *Don't use it*. Because of how their API works, or at least how I know it works,
+> the script will have to go through every single page of tags to get the full data to then be able to create the tag lists -
+> which will take 4-5 hours. Here's the data for it <https://huggingface.co/datasets/DraconicDragon/Gelbooru-Tags-Full_2026-06-11> and here's a tag list with default settings (and post_threshold = 20) <https://github.com/DraconicDragon/dbr-e621-lists-archive/blob/main/tag-lists/gelbooru/gelbooru_2026-06-10_pt20.csv>
+> There's also no aliases
+
+<details><summary>Danbooru's Google BigQuery dump notes, most can just ignore this unless interested</summary>
 If you dont want to scrape danbooru's API using this script and know your way around Google BigQuery, there's an official danbooru dump [here](https://console.cloud.google.com/bigquery?project=danbooru1&pli=1) where you can easily do SQL queries. Krita-AI-diffusion has a guide-ish file [here](https://github.com/Acly/krita-ai-diffusion/tree/main/ai_diffusion/tags) that explains some stuff, maybe it helps</details>
 
 ### If you are a developer
@@ -50,45 +55,21 @@ The named programs and their extensions below are only the ones I have tested an
     - You will see a refresh and folder icon on the right side. Click the folder icon and it should take you to the tags folder where you have to replace the tag files with the ones you want to use.
     <sub>Note: For me personally on Windows, the tags folder was in `%appdata%\krita\pykrita\ai_diffusion\tags` while the folder icon took me to `%appdata%\krita\ai_diffusion\tags` </sub>
 
-- [SwarmUI](https://github.com/mcmonkeyprojects/SwarmUI)
-  - Please see here: <https://github.com/mcmonkeyprojects/SwarmUI/blob/master/docs/Features/Autocompletions.md#word-lists>
-
-~~The tag lists are automatically updated every 2 months by a GitHub actions workflow and saved in the tag-lists folder so even if I forget to update the tag lists manually, they will always be updated automatically.~~ yeah lol thats not working - will update at some point
-
 ## Running the Script Yourself
 
-**INFO**: Hi, if you are looking to run this script yourself, i'd appreciate if you could look over the finished danbooru CSV (or JSON data if you use raw mode) and see if it's correct. I've recently changed the csv creation code to use the scraping code from raw mode but haven't really done thorough tests with it. If you don't want to have any potential issues even though i don't think there should be any, the latest commit id before this change is `f53900da102150e08feae8ba552d170f8540e6dd`
-
-### Method 1: Local
-
-- Install the dependencies first `pip install pandas requests beautifulsoup4 aiohttp` or from the txt file `pip install -r requirements.txt`
-- Run `python3 main.py` and fill out the options - after this the processing begins
-- You can also just spam enter to use the default values which will give you both Danbooru and e621 tag lists including active and deleted aliases and the merged list.
+- Clone the repository `git clone https://github.com/DraconicDragon/danbooru-e621-tag-list-processor`
+- `cd danbooru-e621-tag-list-processor` into the cloned repository folder
+- Have Python installed and create a venv `python3 -m venv .venv`
+- Install the dependencies `pip install -r requirements.txt`
+- Run `python main.py` and fill out the options - after this the processing begins
+  - You can also just spam enter to use the default values which will give you both Danbooru and e621 tag lists including active and deleted aliases and the merged list.
 
 The tag lists should be saved in a folder called /output/tag_lists that will be created after the program successfully creates the CSV files (to check you can just check the terminal output, it should print out the location of the saved files)
 
-### Method 2 (Requires GitHub account): GitHub actions
-
-- SOON:tm::tm:
-- Fork this repo
-- Go to the "Actions" tab of the forked repo
-- Select the X on the left
-- Click X on the right and the workflow with optional custom settings
-- Wait for the workflow to finish and go to X and scroll down, you will be able to download the artifact there which should contain the output CSV file(s)
-
 #### Raw mode
 
-There is a "Raw mode" which will allow you to scrape the raw data without turning it into tag lists. Simply enter "raw" for the first question/selection and follow the instructions.
+There is a "Raw mode" which will allow you to scrape the raw data without turning it into tag lists. Simply enter "raw" for the first question/selection and follow the instructions. Don't use with e621 because code no work for that, just download from here is easier anyway: <https://e621.net/db_exports>
 
 Danbooru scraping part in the code was originally copied from here (many thank): <https://github.com/BetaDoggo/danbooru-tag-list>
 
-im bad at repo names
-
-<sub>personal note regarding pandas because im too lazy to actually read it: dbr_e6_tag_processor.py:175: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
-  tag_df = pd.concat([tag_df, pd.DataFrame(data)], ignore_index=True)</sub>
-
-notes for myself:
-i should've just read <https://github.com/Acly/krita-ai-diffusion/tree/main/ai_diffusion/tags> lol
-i thought the bigquery was inaccessible by plebs turns out, im just dumb, just had to link it to my own project aaaaaaaaa
-if i can make code so that user doesnt need to make their own bigquery project/google account then maybe therell be a bigquery branch
-otherwise itll probably just make the raw data scrape mode of this project redundant
+- interesting read on making somewhat separated SFW/NSFW tag lists <https://github.com/Acly/krita-ai-diffusion/tree/main/ai_diffusion/tags>
