@@ -160,9 +160,8 @@ async def process_gb_tags_async(settings):
         # Clean & Filter for Autocomplete CSV
         df["count"] = pd.to_numeric(df["count"], errors="coerce").fillna(0).astype(int)
         df["type"] = pd.to_numeric(df["type"], errors="coerce").fillna(0).astype(int)
-        df["ambiguous"] = pd.to_numeric(df["ambiguous"], errors="coerce").fillna(0).astype(int)
 
-        df = df[(df["count"] >= int(settings["min_post_thresh"])) & (df["type"] != 6) & (df["ambiguous"] == 0)]
+        df = df[(df["count"] >= int(settings["min_post_thresh"])) & (df["type"] != 6)]
 
         df = df.rename(columns={"count": "post_count", "type": "category"})
         df = df[["name", "category", "post_count"]].sort_values(by="post_count", ascending=False)
