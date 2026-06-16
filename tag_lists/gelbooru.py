@@ -1,6 +1,7 @@
 # tag_lists/gelbooru.py
 
 import asyncio
+import html
 import json
 import os
 from datetime import datetime
@@ -19,6 +20,12 @@ raw_data_dir = os.path.join(output_dir, "raw_data")
 # Checkpoint file paths
 CHECKPOINT_FILE = os.path.join(raw_data_dir, "gelbooru_checkpoint.json")
 PARTIAL_DATA_FILE = os.path.join(raw_data_dir, "gelbooru_partial.jsonl")
+
+
+def normalize_tag_text(value):
+    if isinstance(value, str):
+        return html.unescape(value)
+    return value
 
 
 def save_checkpoint(pid):
@@ -45,6 +52,8 @@ def append_partial_data(tags):
     """Appends tags to a JSONL file (one JSON object per line)."""
     with open(PARTIAL_DATA_FILE, "a", encoding="utf-8") as f:
         for tag in tags:
+            if isinstance(tag, dict) and "name" in tag:
+                tag["name"] = normalize_tag_text(tag["name"])
             f.write(json.dumps(tag, ensure_ascii=False) + "\n")
 
 
@@ -58,7 +67,10 @@ def finalize_raw_data():
     with open(PARTIAL_DATA_FILE, "r", encoding="utf-8") as f:
         for line in f:
             if line.strip():
-                all_tags.append(json.loads(line))
+                tag = json.loads(line)
+                if isinstance(tag, dict) and "name" in tag:
+                    tag["name"] = normalize_tag_text(tag["name"])
+                all_tags.append(tag)
 
     date_str = datetime.now().strftime("%Y-%m-%d")
     final_path = os.path.join(raw_data_dir, f"gelbooru_tags_raw_{date_str}.json")
@@ -67,10 +79,6 @@ def finalize_raw_data():
         json.dump(all_tags, f, ensure_ascii=False, indent=2)
 
     print(f"Final JSON saved: {final_path}")
-
-    # Optional: Clean up partial files after success
-    # os.remove(CHECKPOINT_FILE)
-    # os.remove(PARTIAL_DATA_FILE)
 
     return all_tags
 
@@ -128,6 +136,9 @@ async def scrape_target(session, url):
             if not page_tags:
                 finished = True
             else:
+                for tag in page_tags:
+                    if isinstance(tag, dict) and "name" in tag:
+                        tag["name"] = normalize_tag_text(tag["name"])
                 batch_tags.extend(page_tags)
 
         if batch_tags:
@@ -156,6 +167,9 @@ async def process_gb_tags_async(settings):
         df = pd.DataFrame(raw_json)
         if df.empty:
             return pd.DataFrame()
+
+        if "name" in df.columns:
+            df["name"] = df["name"].astype(str).map(normalize_tag_text)
 
         # Clean & Filter for Autocomplete CSV
         df["count"] = pd.to_numeric(df["count"], errors="coerce").fillna(0).astype(int)
