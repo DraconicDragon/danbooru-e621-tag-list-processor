@@ -171,6 +171,18 @@ def options():
     else:
         merged_post_count_type = DEFAULTS["merged_post_count_type"]
 
+    # If scraping danbooru, the user-agent must contain _a_ user id
+    if choice_site == 1 or choice_site == 3:
+        dbr_user_id = get_input(
+            "What's your danbooru user id? (can be found here when logged in: https://danbooru.donmai.us/profile)",
+            -1,
+            int
+        )
+        # For details: https://danbooru.donmai.us/wiki_pages/help:api
+        dbr_headers = {"User-Agent": f"danbooru-e621-tag-list-processor/1.0 (user {dbr_user_id})"}
+    else:
+        dbr_headers = None
+
     min_post_thresh = get_input(
         "Enter min. number of posts for a tag to be kept (tags with fewer posts will be ignored)",
         DEFAULTS["min_post_thresh"],
@@ -270,4 +282,5 @@ def options():
         "create_krita_csv": create_krita_csv,
         # "create_wildcard": create_wildcard,
         # "wildcard_categories": wildcard_categories,
+        "dbr_headers": dbr_headers
     }
