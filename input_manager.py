@@ -179,7 +179,7 @@ def options():
             int
         )
         # For details: https://danbooru.donmai.us/wiki_pages/help:api
-        dbr_headers = {"User-Agent": f"danbooru-e621-tag-list-processor/1.0 (user {dbr_user_id})"}
+        dbr_headers = {"User-Agent": f"danbooru-e621-tag-list-processor/1.0 (user #{dbr_user_id})"}
     else:
         dbr_headers = None
 
