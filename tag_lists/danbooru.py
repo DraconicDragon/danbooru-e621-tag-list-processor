@@ -18,7 +18,7 @@ def stop_if_below_post_threshold(item, settings):
 
 
 async def process_dbr_tags_async(settings):
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(headers=settings.get("dbr_headers")) as session:
         df1_target = DBR_SCRAPE_TARGETS.get(1)  # 1 = Tags, 2 = Aliases
         df1_json = await scrape_target(
             session,
@@ -103,6 +103,7 @@ async def scrape_target(session, url, target_name, stop_check=None, settings=Non
         # Launch a batch of tasks (each task is one page)
         tasks = [scrape_page(session, url, page + i) for i in range(batch_size)]
         raw_results = await asyncio.gather(*tasks)
+        await asyncio.sleep(2)  # in order to avoid getting rate limited
         results = []
         pages_with_status = []
 
