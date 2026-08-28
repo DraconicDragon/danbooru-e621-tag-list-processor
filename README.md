@@ -1,19 +1,17 @@
 ## Create Danbooru and e621 Tag Lists for AI related Autocomplete Extensions
 
-This script scrapes tags from the Danbooru API and downloads e621 tags from <https://e621.net/db_export/> and formatting them for AI autocomplete extensions. It can create separate and merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status as well as creating [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion) compatible tag lists (unfiltered/NSFW versions only).
+This project scrapes tags from the Danbooru API and downloads e621 tags from <https://e621.net/db_export/>. It also formats them into CSV files for AI autocomplete extensions (intended purpose at least). It can create separate and merged tag lists for Danbooru and e621, with options like alias inclusion, minimum post thresholds, and filtering by alias status as well as creating [Krita AI diffusion](https://github.com/Acly/krita-ai-diffusion) compatible tag lists (unfiltered/NSFW versions only).
 
-The CivitAI page for these can be found here: <https://civitai.com/models/950325>
-An archive of CSV files I made can be found here: <https://github.com/DraconicDragon/dbr-e621-lists-archive>
+An archive of CSV files I/GitHub Actions made can be found here: <https://github.com/DraconicDragon/dbr-e621-lists-archive>.  
+Every months, the GH action job creates tag lists and uploads them as artifacts. Every 3 months, the tag lists are committed to the repo. <sub>In the future, updates may be on HuggingFace instead since I feel like GitHub may not tolerate that repo at some point, but I'm too lazy to switch</sub>
 
-The tag lists are automatically created (as GH actions artifacts) every month in the archive repo, and saved every 3 months in the tag-lists folder.
-
-> **Note on Gelbooru option**: The script also supports scraping from Gelbooru. *Don't use it*. Because of how their API works, or at least how I know it works,
+> **Note on Gelbooru option**: The script also supports scraping from Gelbooru. *Don't use it*. Because of how their API works, or at least how I think I know it works,
 > the script will have to go through every single page of tags to get the full data to then be able to create the tag lists -
-> which will take 4-5 hours. Here's the data for it <https://huggingface.co/datasets/DraconicDragon/Gelbooru-Tags-Full_2026-06-11> and here's a tag list with default settings (and post_threshold = 20) <https://github.com/DraconicDragon/dbr-e621-lists-archive/blob/main/tag-lists/gelbooru/gelbooru_2026-06-10_pt20.csv>
+> which will take 4-5 hours. Here's the full data from a run I did: <https://huggingface.co/datasets/DraconicDragon/Gelbooru-Tags-Full_2026-06-11> and here's a tag list with default settings (and post_threshold = 20) <https://github.com/DraconicDragon/dbr-e621-lists-archive/blob/main/tag-lists/gelbooru/gelbooru_2026-06-10_pt20.csv>
 > There's also no aliases
 
 <details><summary>Danbooru's Google BigQuery dump notes, most can just ignore this unless interested</summary>
-If you dont want to scrape danbooru's API using this script and know your way around Google BigQuery, there's an official danbooru dump [here](https://console.cloud.google.com/bigquery?project=danbooru1&pli=1) where you can easily do SQL queries. Krita-AI-diffusion has a guide-ish file [here](https://github.com/Acly/krita-ai-diffusion/tree/main/ai_diffusion/tags) that explains some stuff, maybe it helps</details>
+I never properly used this myself... but if you dont want to scrape danbooru's API using this script and know your way around Google BigQuery, there's an official danbooru dump [here](https://console.cloud.google.com/bigquery?project=danbooru1&pli=1) where you can easily do SQL queries. Krita-AI-diffusion has a guide-ish file [here](https://github.com/Acly/krita-ai-diffusion/tree/main/ai_diffusion/tags) that explains some stuff, maybe it helps</details>
 
 ### If you are a developer
 
@@ -68,8 +66,6 @@ The tag lists should be saved in a folder called /output/tag_lists that will be 
 
 #### Raw mode
 
-There is a "Raw mode" which will allow you to scrape the raw data without turning it into tag lists. Simply enter "raw" for the first question/selection and follow the instructions. Don't use with e621 because code no work for that, just download from here is easier anyway: <https://e621.net/db_exports>
+There is a "Raw mode" which will allow you to scrape the raw data without turning it into tag lists. Simply enter "raw" for the first question/selection and follow the instructions. Don't use with e621 because code no work for that, just download from here manually: <https://e621.net/db_exports>. Is easier anyway.
 
 Danbooru scraping part in the code was originally copied from here (many thank): <https://github.com/BetaDoggo/danbooru-tag-list>
-
-- interesting read on making somewhat separated SFW/NSFW tag lists <https://github.com/Acly/krita-ai-diffusion/tree/main/ai_diffusion/tags>
