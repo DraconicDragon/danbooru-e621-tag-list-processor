@@ -7,6 +7,27 @@ from defaults import DBR_SCRAPE_TARGETS
 from tag_lists.merge_utils import add_aliases
 
 
+class RateLimiter:
+    """Limits requests to a fixed interval."""
+
+    def __init__(self, interval=1.0):
+        """Set the minimum time between requests."""
+        self.interval = interval
+        self.lock = asyncio.Lock()
+        self.last_request = 0.0
+
+    async def wait(self):
+        """Wait until the next request is allowed."""
+        async with self.lock:
+            now = asyncio.get_running_loop().time()
+            elapsed = now - self.last_request
+
+            if elapsed < self.interval:
+                await asyncio.sleep(self.interval - elapsed)
+
+            self.last_request = asyncio.get_running_loop().time()
+
+
 def convert_json_to_df(json_data):
     return pd.DataFrame(json_data)
 
@@ -19,6 +40,8 @@ def stop_if_below_post_threshold(item, settings):
 
 async def process_dbr_tags_async(settings):
     async with aiohttp.ClientSession(headers=settings.get("dbr_headers")) as session:
+        rate_limiter = RateLimiter(1.0)
+
         df1_target = DBR_SCRAPE_TARGETS.get(1)  # 1 = Tags, 2 = Aliases
         df1_json = await scrape_target(
             session,
@@ -26,6 +49,7 @@ async def process_dbr_tags_async(settings):
             df1_target["name"],
             stop_check=stop_if_below_post_threshold,
             settings=settings,
+            rate_limiter=rate_limiter,
         )
         df1 = convert_json_to_df(df1_json)
         df1 = df1[df1["post_count"] >= settings["min_post_thresh"]]
@@ -40,6 +64,7 @@ async def process_dbr_tags_async(settings):
                 df2_target["name"],
                 stop_check=stop_if_below_post_threshold,
                 settings=settings,
+                rate_limiter=rate_limiter,
             )
             df2 = convert_json_to_df(df2_json)
             if settings.get("dbr_incl_deleted_alias") == "n":
@@ -51,7 +76,7 @@ async def process_dbr_tags_async(settings):
             return df1
 
 
-async def scrape_page(session, base_url, page, max_retries=3, backoff=3):
+async def scrape_page(session, base_url, page, rate_limiter, max_retries=3, backoff=3):
     """
     Scrapes a single page by appending the page parameter to the URL.
     """
@@ -62,6 +87,8 @@ async def scrape_page(session, base_url, page, max_retries=3, backoff=3):
 
     for attempt in range(1, max_retries + 1):
         try:
+            await rate_limiter.wait()
+
             async with session.get(page_url) as resp:
                 if resp.status == 410:
                     print(f"Page {page} returned 410 Gone — skipping retries.")
@@ -88,7 +115,14 @@ async def scrape_page(session, base_url, page, max_retries=3, backoff=3):
     return None, last_status
 
 
-async def scrape_target(session, url, target_name, stop_check=None, settings=None):
+async def scrape_target(
+    session,
+    url,
+    target_name,
+    stop_check=None,
+    settings=None,
+    rate_limiter=None,
+):
     """
     Processes one scraping target (a URL) in batches of 5 pages concurrently.
     Merges all pages' JSON data in the order they were scraped.
@@ -101,9 +135,8 @@ async def scrape_target(session, url, target_name, stop_check=None, settings=Non
     print(f"\nStarting scraping for target '{target_name}' ({url})")
     while True:
         # Launch a batch of tasks (each task is one page)
-        tasks = [scrape_page(session, url, page + i) for i in range(batch_size)]
+        tasks = [scrape_page(session, url, page + i, rate_limiter) for i in range(batch_size)]
         raw_results = await asyncio.gather(*tasks)
-        await asyncio.sleep(2)  # in order to avoid getting rate limited
         results = []
         pages_with_status = []
 
